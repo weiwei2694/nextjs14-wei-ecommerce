@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    String @id
+  name  String @db.VarChar(100)
+  email String @unique @db.VarChar(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  id          String  @id @default(uuid())
+  title       String
+  price       String
+  description String  @db.Text
+  isFeatured  Boolean @default(false)
+  isArchived  Boolean @default(false)
+
+  images     Image[]
+  orderItems OrderItem[]
+
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId String
+  color      Color    @relation(fields: [colorId], references: [id], onDelete: Cascade)
+  colorId    String
+  size       Size     @relation(fields: [sizeId], references: [id], onDelete: Cascade)
+  sizeId     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Color {
+  id    String @id @default(uuid())
+  name  String @unique @db.VarChar(100)
+  color String @unique @db.VarChar(10)
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Size {
+  id   String @id @default(uuid())
+  name String @unique @db.VarChar(100)
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Image {
+  id  String @id @default(uuid())
+  url String @db.Text
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id   String @id @default(uuid())
+  name String @db.VarChar(100)
+
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Order {
+  id     String @id @default(uuid())
+  amount Float
+  total  Int
+
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  id     String @id @default(uuid())
+  amount Float
+  total  Int
+
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
