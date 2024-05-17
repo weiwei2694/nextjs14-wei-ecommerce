@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@kinde-oss/kinde-auth-nextjs": "^2.2.9",
     "@prisma/client": "^5.14.0",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
