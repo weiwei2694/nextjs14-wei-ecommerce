@@ -3,27 +3,26 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Inter } from 'next/font/google';
 
-import { ArrowRightIcon, Menu, WalletCards } from 'lucide-react';
+import { ArrowRightIcon, Menu } from 'lucide-react';
+
+import Cart from './Cart';
 
 import { cn } from '@/lib/utils';
 
 import { LogoutLink, LoginLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import type { KindeUser } from '@kinde-oss/kinde-auth-nextjs/types';
 
-import { Button, buttonVariants } from './ui/button';
+import { buttonVariants } from './ui/button';
 import {
 	Sheet,
-	SheetClose,
 	SheetContent,
-	SheetDescription,
 	SheetFooter,
 	SheetHeader,
-	SheetTitle,
 	SheetTrigger,
 } from '@/components/ui/sheet';
 
-import { Inter } from 'next/font/google';
 const inter = Inter({
 	subsets: ['latin'],
 });
@@ -48,7 +47,7 @@ const Navbar = ({ user }: { user: KindeUser | null }) => {
 	const pathname = usePathname();
 
 	return (
-		<nav className='sticky z-[100] top-0 bg-white border-b border-gray-200'>
+		<nav className='sticky z-[100] top-0 bg-white/50 backdrop-blur border-b border-gray-200'>
 			<div className='max-w-7xl mx-auto'>
 				<div
 					className={cn(
@@ -81,13 +80,7 @@ const Navbar = ({ user }: { user: KindeUser | null }) => {
 						</ul>
 					</div>
 					<div className='flex items-center space-x-4'>
-						<Button
-							size='sm'
-							className='rounded-full bg-zinc-900 hover:bg-zinc-900/90 transition-all duration-200 px-5'
-						>
-							<WalletCards className='w-5 h-5 mr-1.5' />
-							<span className='font-bold text-xs'>12</span>
-						</Button>
+						<Cart />
 
 						<div className='h-10 w-px bg-zinc-200 hidden lg:block' />
 
