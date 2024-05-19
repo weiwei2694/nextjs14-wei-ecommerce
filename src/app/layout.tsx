@@ -18,11 +18,15 @@ export default async function RootLayout({
 }>) {
 	const { getUser } = getKindeServerSession();
 	const user = await getUser();
+	const isAdmin = user?.email === process.env.ADMIN_EMAIL;
 
 	return (
 		<html lang='en'>
 			<body className={recursive.className}>
-				<Navbar user={user} />
+				<Navbar
+					user={user}
+					isAdmin={isAdmin}
+				/>
 				<main className='min-h-screen'>{children}</main>
 			</body>
 		</html>
