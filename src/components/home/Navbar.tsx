@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
 import { LogoutLink, LoginLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import type { KindeUser } from '@kinde-oss/kinde-auth-nextjs/types';
 
-import { buttonVariants } from './ui/button';
+import { buttonVariants } from '../ui/button';
 import {
 	Sheet,
 	SheetContent,
