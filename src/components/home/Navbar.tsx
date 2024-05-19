@@ -7,14 +7,12 @@ import { Inter } from 'next/font/google';
 
 import { ArrowRightIcon, Menu } from 'lucide-react';
 
-import Cart from './Cart';
-
 import { cn } from '@/lib/utils';
 
 import { LogoutLink, LoginLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import type { KindeUser } from '@kinde-oss/kinde-auth-nextjs/types';
 
-import { buttonVariants } from '../ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import {
 	Sheet,
 	SheetContent,
@@ -22,6 +20,9 @@ import {
 	SheetHeader,
 	SheetTrigger,
 } from '@/components/ui/sheet';
+import NavbarParent from '@/components/NavbarParent';
+import Cart from '@/components/home/Cart';
+import Logo from '@/components/Logo';
 
 const inter = Inter({
 	subsets: ['latin'],
@@ -164,65 +165,49 @@ const Navbar = ({
 	const pathname = usePathname();
 
 	return (
-		<nav className='sticky z-[100] top-0 bg-white/50 backdrop-blur border-b border-gray-200'>
-			<div className='max-w-7xl mx-auto'>
-				<div
-					className={cn(
-						inter.className,
-						'flex items-center justify-between h-16 px-6 2xl:px-0'
-					)}
-				>
-					<div className='flex items-center space-x-8'>
-						<Link
-							href='/'
-							className='relative w-fit text-balance font-bold text-zinc-900 text-xl uppercase'
-						>
-							STORE
-						</Link>
+		<NavbarParent>
+			<div className='flex items-center space-x-8'>
+				<Logo />
 
-						<ul className='hidden lg:flex items-center space-x-8'>
-							{isAdmin ? (
-								<li>
-									<Link
-										href='/dashboard'
-										className={cn(
-											'text-zinc-900 tracking-tight text-sm',
-											pathname === '/dashboard'
-												? 'font-semibold'
-												: 'font-normal'
-										)}
-									>
-										Dashboard
-									</Link>
-								</li>
-							) : null}
-							{lists.map((list) => (
-								<li key={list.name}>
-									<Link
-										href={list.href}
-										className={cn(
-											'text-zinc-900 tracking-tight text-sm',
-											pathname === list.href ? 'font-semibold' : 'font-normal'
-										)}
-									>
-										{list.name}
-									</Link>
-								</li>
-							))}
-						</ul>
-					</div>
-					<div className='flex items-center space-x-4'>
-						<Cart />
-						<Barrier />
-						<LogoutAndLogin user={user} />
-						<NavListMobile
-							isAdmin={isAdmin}
-							pathname={pathname}
-						/>
-					</div>
-				</div>
+				<ul className='hidden lg:flex items-center space-x-8'>
+					{isAdmin ? (
+						<li>
+							<Link
+								href='/dashboard'
+								className={cn(
+									'text-zinc-900 tracking-tight text-sm',
+									pathname === '/dashboard' ? 'font-semibold' : 'font-normal'
+								)}
+							>
+								Dashboard
+							</Link>
+						</li>
+					) : null}
+					{lists.map((list) => (
+						<li key={list.name}>
+							<Link
+								href={list.href}
+								className={cn(
+									'text-zinc-900 tracking-tight text-sm',
+									pathname === list.href ? 'font-semibold' : 'font-normal'
+								)}
+							>
+								{list.name}
+							</Link>
+						</li>
+					))}
+				</ul>
 			</div>
-		</nav>
+			<div className='flex items-center space-x-4'>
+				<Cart />
+				<Barrier />
+				<LogoutAndLogin user={user} />
+				<NavListMobile
+					isAdmin={isAdmin}
+					pathname={pathname}
+				/>
+			</div>
+		</NavbarParent>
 	);
 };
 
