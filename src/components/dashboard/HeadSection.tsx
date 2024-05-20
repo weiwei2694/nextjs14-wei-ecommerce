@@ -39,8 +39,7 @@ const HeadSection = ({
 						className={buttonVariants({
 							variant: 'default',
 							size: 'default',
-							className:
-								'bg-zinc-900 hover:bg-zinc-900/90 transition-all duration-200 text-white',
+							className: 'text-white',
 						})}
 					>
 						<Plus className='w-4 h-4 mr-1.5' />

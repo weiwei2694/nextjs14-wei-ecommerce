@@ -138,8 +138,7 @@ const NavListMobile = ({
 							className={buttonVariants({
 								size: 'default',
 								variant: 'default',
-								className:
-									'bg-zinc-900 hover:bg-zinc-900/90 transition-all duration-200 w-full',
+								className: 'w-full',
 							})}
 						>
 							Log Out

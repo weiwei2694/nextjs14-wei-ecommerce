@@ -88,8 +88,7 @@ const NavListMobile = ({ pathname }: { pathname: string }) => {
 							className={buttonVariants({
 								size: 'default',
 								variant: 'default',
-								className:
-									'bg-zinc-900 hover:bg-zinc-900/90 transition-all duration-200 w-full',
+								className: 'w-full',
 							})}
 							href='/'
 						>
@@ -133,8 +132,7 @@ const Navbar = () => {
 					href='/dashboard/settings'
 					className={buttonVariants({
 						size: 'sm',
-						className:
-							'rounded-full bg-zinc-900 hover:bg-zinc-900/90 transition-all duration-200 px-5',
+						className: 'rounded-full px-5',
 					})}
 				>
 					Settings

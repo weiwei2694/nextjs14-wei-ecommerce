@@ -91,7 +91,7 @@ const Cart = () => {
 			<SheetTrigger asChild>
 				<Button
 					size='sm'
-					className='rounded-full bg-zinc-900 hover:bg-zinc-900/90 transition-all duration-200 px-5'
+					className='rounded-full px-5'
 				>
 					<WalletCards className='w-5 h-5 mr-1.5' />
 					<span className='font-bold text-xs'>12</span>
@@ -195,9 +195,9 @@ const Cart = () => {
 						>
 							Tax included. Shipping calculated at checkout.
 						</span>
-						<button
+						<Button
 							type='button'
-							className='py-[10px] px-[30px] rounded-none h-[49px] w-full uppercase bg-zinc-900 hover:bg-zinc-900/90 text-white tracking-[.3rem] font-[600] flex flex-row items-center justify-center gap-x-4'
+							className='py-[10px] px-[30px] rounded-none h-[49px] w-full uppercase text-white tracking-[.3rem] font-[600] flex flex-row items-center justify-center gap-x-4'
 						>
 							checkout
 							<div
@@ -205,7 +205,7 @@ const Cart = () => {
 								className='w-[14px] h-[2px] bg-white'
 							/>
 							<span className='tracking-widest'>$22 usd</span>
-						</button>
+						</Button>
 					</div>
 				</SheetFooter>
 			</SheetContent>
