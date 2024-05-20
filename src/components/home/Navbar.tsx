@@ -161,7 +161,7 @@ const Navbar = ({
 	const pathname = usePathname();
 
 	return (
-		<NavbarParent>
+		<NavbarParent isSticky>
 			<div className='flex items-center space-x-8'>
 				<Logo />
 

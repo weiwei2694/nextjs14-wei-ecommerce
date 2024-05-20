@@ -10,12 +10,19 @@ const inter = Inter({
 const NavbarParent = ({
 	children,
 	className,
+	isSticky,
 }: {
 	children?: React.ReactNode;
 	className?: string;
+	isSticky?: boolean;
 }) => {
 	return (
-		<nav className='sticky z-[100] top-0 bg-white/50 backdrop-blur border-b border-gray-200'>
+		<nav
+			className={cn(
+				'border-b border-gray-200',
+				isSticky ? 'sticky z-[100] top-0 bg-white/50 backdrop-blur' : 'bg-white'
+			)}
+		>
 			<div className='max-w-7xl mx-auto'>
 				<div
 					className={cn(
