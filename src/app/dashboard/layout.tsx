@@ -1,9 +1,12 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+import { Inter } from 'next/font/google';
 
 import Navbar from '@/components/dashboard/Navbar';
 
 import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
+
+const inter = Inter({ subsets: ['latin'] });
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
 	const { getUser } = getKindeServerSession();
@@ -14,12 +17,12 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
 	}
 
 	return (
-		<>
+		<div className={inter.className}>
 			<Navbar />
 			<main className='min-h-screen max-w-7xl mx-auto px-9 2xl:px-3'>
 				{children}
 			</main>
-		</>
+		</div>
 	);
 };
 

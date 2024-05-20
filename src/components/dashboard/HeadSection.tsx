@@ -1,14 +1,9 @@
 import React from 'react';
 import Link from 'next/link';
-import { Inter } from 'next/font/google';
-
-import { cn } from '@/lib/utils';
 
 import { buttonVariants } from '@/components/ui/button';
 
 import { Plus } from 'lucide-react';
-
-const inter = Inter({ subsets: ['latin'] });
 
 const HeadSection = ({
 	title,
@@ -24,7 +19,7 @@ const HeadSection = ({
 	newButtonPath?: string;
 }) => {
 	return (
-		<section className={cn(inter.className, 'pt-2 border-b border-b-gray-200')}>
+		<section className='pt-2 border-b border-b-gray-200'>
 			<div className='h-24 flex items-center justify-between'>
 				<div className='flex flex-col space-y-1'>
 					<h1 className='text-3xl font-extrabold text-zinc-900'>{title}</h1>
