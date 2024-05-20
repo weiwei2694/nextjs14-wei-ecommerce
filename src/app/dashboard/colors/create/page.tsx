@@ -3,6 +3,8 @@ import React from 'react';
 import BodySection from '@/components/dashboard/BodySection';
 import HeadSection from '@/components/dashboard/HeadSection';
 
+import Form from './Form';
+
 const Page = () => {
 	return (
 		<BodySection>
@@ -10,6 +12,7 @@ const Page = () => {
 				title='Create color'
 				subtitle='Add a new color'
 			/>
+			<Form />
 		</BodySection>
 	);
 };
