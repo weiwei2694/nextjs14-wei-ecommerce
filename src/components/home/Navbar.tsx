@@ -23,6 +23,7 @@ import {
 import NavbarParent from '@/components/NavbarParent';
 import Cart from '@/components/home/Cart';
 import Logo from '@/components/Logo';
+import Barrier from '../Barrier';
 
 const inter = Inter({
 	subsets: ['latin'],
@@ -43,10 +44,6 @@ const lists = [
 		href: '/',
 	},
 ];
-
-const Barrier = () => {
-	return <div className='h-10 w-px bg-zinc-200 hidden lg:block' />;
-};
 
 const LogoutAndLogin = ({ user }: { user: KindeUser | null }) => {
 	return (
