@@ -9,9 +9,11 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.4.0",
     "@kinde-oss/kinde-auth-nextjs": "^2.2.9",
     "@prisma/client": "^5.14.0",
     "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-label": "^2.0.2",
     "@radix-ui/react-scroll-area": "^1.0.5",
     "@radix-ui/react-slot": "^1.0.2",
     "@uploadthing/react": "^6.5.4",
@@ -21,9 +23,11 @@
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
+    "react-hook-form": "^7.51.4",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
-    "uploadthing": "^6.10.4"
+    "uploadthing": "^6.10.4",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^20",
