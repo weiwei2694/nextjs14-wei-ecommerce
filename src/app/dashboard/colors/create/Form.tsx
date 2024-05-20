@@ -1,5 +1,8 @@
 'use client';
 
+import React from 'react';
+import { useRouter } from 'next/navigation';
+
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -15,6 +18,10 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
+import { saveColor } from '../actions';
+
+import { toast } from 'sonner';
+
 const formSchema = z.object({
 	name: z
 		.string()
@@ -26,8 +33,8 @@ const formSchema = z.object({
 		}),
 	color: z
 		.string()
-		.min(4, {
-			message: 'Color must be at least 4 characters.',
+		.min(3, {
+			message: 'Color must be at least 3 characters.',
 		})
 		.max(10, {
 			message: 'Color must be less than 10 characters.',
@@ -40,20 +47,46 @@ const defaultValues = {
 };
 
 const Form = () => {
+	const router = useRouter();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues,
 	});
 
-	function onSubmit(values: z.infer<typeof formSchema>) {
-		// TODO: server actions
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		const { name, color } = values;
+
+		if (!CSS.supports('color', color)) {
+			form.setError('color', {
+				message: 'Color is not supported.',
+			});
+
+			return;
+		}
 
 		try {
-			form.reset(defaultValues);
-		} catch (error) {
-			console.error(`[ERROR: DASHBOARD_COLORS_CREATE]: ${error}`);
+			const { success } = await saveColor({ name, color });
+
+			if (success) {
+				form.reset(defaultValues);
+
+				toast.success('Color created.');
+				router.push('/dashboard/colors');
+			}
+		} catch (err) {
+			console.error(`[ERROR: DASHBOARD_COLORS_CREATE]: ${err}`);
+
+			if (
+				typeof err === 'string' &&
+				err === 'You do not have access to this area'
+			) {
+				toast.error(err);
+			} else {
+				toast.error('Something went wrong.');
+			}
 		}
-	}
+	};
 
 	const isLoading = form.formState.isSubmitting;
 
@@ -97,6 +130,7 @@ const Form = () => {
 						)}
 					/>
 				</div>
+
 				<div>
 					<Button
 						disabled={isLoading}
