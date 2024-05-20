@@ -1,14 +1,16 @@
-import HeadSection from '@/components/dashboard/HeadSection';
 import React from 'react';
+
+import BodySection from '@/components/dashboard/BodySection';
+import HeadSection from '@/components/dashboard/HeadSection';
 
 const Page = () => {
 	return (
-		<div>
+		<BodySection>
 			<HeadSection
 				title='Dashboard'
 				subtitle='Overview of you store'
 			/>
-		</div>
+		</BodySection>
 	);
 };
 
