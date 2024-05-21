@@ -12,8 +12,8 @@ import {
 
 import { toast } from 'sonner';
 
-import type { GetColors } from './types';
-import { deleteColor } from './actions';
+import type { GetColors } from './_utils/types';
+import { deleteColor } from './_utils/actions';
 import Color from './Color';
 
 const Table = ({ colors }: { colors: GetColors }) => {

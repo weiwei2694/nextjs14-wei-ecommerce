@@ -4,7 +4,7 @@ import BodySection from '@/components/dashboard/BodySection';
 import HeadSection from '@/components/dashboard/HeadSection';
 
 import Table from './Table';
-import { getTotalColor, getColors } from './actions';
+import { getTotalColor, getColors } from './_utils/actions';
 
 const Page = async () => {
 	const totalColor = await getTotalColor();

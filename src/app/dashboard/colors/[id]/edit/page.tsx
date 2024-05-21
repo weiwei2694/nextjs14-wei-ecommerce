@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import BodySection from '@/components/dashboard/BodySection';
 import HeadSection from '@/components/dashboard/HeadSection';
 
-import { getColor } from '../../actions';
+import { getColor } from '../../_utils/actions';
 import Form from './Form';
 
 const Page = async ({ params }: { params: { id: string } }) => {
