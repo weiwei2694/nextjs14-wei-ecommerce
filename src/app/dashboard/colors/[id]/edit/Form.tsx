@@ -18,18 +18,17 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { colorValidation } from '../valitions';
-import { saveColor } from '../actions';
+import { colorValidation } from '../../valitions';
+import { updateColor } from '../../actions';
+
+import type { Color } from '@prisma/client';
 
 import { toast } from 'sonner';
 
-const Form = () => {
+const Form = ({ color: currentColor }: { color: Color }) => {
 	const router = useRouter();
 
-	const defaultValues = {
-		name: '',
-		color: '',
-	};
+	const defaultValues = currentColor;
 
 	const form = useForm<z.infer<typeof colorValidation>>({
 		resolver: zodResolver(colorValidation),
@@ -38,6 +37,13 @@ const Form = () => {
 
 	const onSubmit = async (values: z.infer<typeof colorValidation>) => {
 		const { name, color } = values;
+
+		// There is nothing that needs to be updated, if the data is still the same
+		if (name === currentColor.name && color === currentColor.color) {
+			toast.success('Color updated.');
+			router.push('/dashboard/colors');
+			return;
+		}
 
 		if (!CSS.supports('color', color)) {
 			form.setError('color', {
@@ -48,22 +54,31 @@ const Form = () => {
 		}
 
 		try {
-			const { success } = await saveColor({ name, color });
+			const { success, data } = await updateColor({
+				id: currentColor.id,
+				name,
+				color,
+			});
 
-			if (success) {
-				form.reset(defaultValues);
+			if (success && data) {
+				form.reset({
+					name: data.name,
+					color: data.color,
+				});
 
-				toast.success('Color created.');
+				toast.success('Color updated.');
 				router.push('/dashboard/colors');
 			}
 		} catch (err) {
 			console.error(`[ERROR: DASHBOARD_COLORS_CREATE]: ${err}`);
 
-			if (
-				typeof err === 'string' &&
-				err === 'You do not have access to this area'
-			) {
-				toast.error(err);
+			if (typeof err === 'string') {
+				if (
+					err === 'Color not found.' ||
+					err === 'You do not have access to this area'
+				) {
+					toast.error(err);
+				}
 			} else {
 				toast.error('Something went wrong.');
 			}
@@ -117,10 +132,10 @@ const Form = () => {
 					<Button
 						disabled={isLoading}
 						isLoading={isLoading}
-						loadingText='Created'
+						loadingText='Updated'
 						type='submit'
 					>
-						Create
+						Update
 					</Button>
 				</div>
 			</form>

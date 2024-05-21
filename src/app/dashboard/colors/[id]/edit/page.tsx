@@ -5,13 +5,14 @@ import BodySection from '@/components/dashboard/BodySection';
 import HeadSection from '@/components/dashboard/HeadSection';
 
 import { getColor } from '../../actions';
+import Form from './Form';
 
 const Page = async ({ params }: { params: { id: string } }) => {
 	const { id } = params;
 
 	const color = await getColor({ id });
 	if (!color) {
-		notFound();
+		return notFound();
 	}
 
 	return (
@@ -20,6 +21,8 @@ const Page = async ({ params }: { params: { id: string } }) => {
 				title='Edit color'
 				subtitle='Edit a new color'
 			/>
+
+			<Form color={color} />
 		</BodySection>
 	);
 };

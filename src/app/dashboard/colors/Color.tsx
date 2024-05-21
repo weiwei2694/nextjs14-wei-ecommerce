@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Inter } from 'next/font/google';
+import { useRouter } from 'next/navigation';
 
 import { TableCell, TableRow } from '@/components/ui/table';
 import {
@@ -37,6 +38,7 @@ const Color = ({
 	isPending: boolean;
 	startTransition: React.TransitionStartFunction;
 }) => {
+	const router = useRouter();
 	const [isOpen, setIsOpen] = useState<boolean>(false);
 
 	return (
@@ -60,7 +62,12 @@ const Color = ({
 							<Ellipsis className='w-5 h-5 text-zinc-900' />
 						</DropdownMenuTrigger>
 						<DropdownMenuContent className={inter.className}>
-							<DropdownMenuItem className='cursor-pointer'>
+							<DropdownMenuItem
+								onClick={() =>
+									router.push(`/dashboard/colors/${color.id}/edit`)
+								}
+								className='cursor-pointer'
+							>
 								<Pencil className='w-4 h-4 mr-3' />
 								Edit
 							</DropdownMenuItem>

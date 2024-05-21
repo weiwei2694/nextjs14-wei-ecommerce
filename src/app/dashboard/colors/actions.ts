@@ -94,3 +94,32 @@ export const deleteColor = async ({ id }: { id: string }): Promise<DeleteColor> 
     revalidatePath('/dashboard/colors');
   }
 }
+
+export const updateColor = async ({ id, name, color }: { id: string, name: string, color: string }) => {
+  try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('You do not have access to this area');
+    }
+
+    const existingColor = await db.color.findFirst({
+      where: { id }
+    });
+    if (!existingColor) {
+      throw new Error('Color not found.');
+    }
+
+    const newColor = await db.color.update({
+      where: { id },
+      data: { name, color }
+    })
+
+    return { success: true, data: newColor };
+  } catch (err) {
+    throw err;
+  } finally {
+    revalidatePath('/dashboard/colors');
+  }
+}
