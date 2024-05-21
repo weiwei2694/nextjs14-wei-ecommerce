@@ -6,10 +6,24 @@ export type SaveColor = {
 
 export type GetTotalColor = number | undefined;
 
-export type GetColors = Color[] | undefined;
+export type GetColors = {
+  data: Color[];
+  hasNext: boolean;
+} | undefined;
 
 export type GetColor = Color | undefined;
 
 export type DeleteColor = {
   success: boolean;
 };
+
+export type UpdateColor = {
+  success: boolean;
+  data: {
+    id: string;
+    name: string;
+    color: string;
+    createdAt: Date;
+    updatedAt: Date;
+  };
+}

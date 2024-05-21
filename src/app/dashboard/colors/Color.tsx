@@ -27,13 +27,11 @@ const inter = Inter({ subsets: ['latin'] });
 
 const Color = ({
 	color,
-	colorIndex,
 	handleDelete,
 	isPending,
 	startTransition,
 }: {
 	color: Color;
-	colorIndex: number;
 	handleDelete: (id: string) => Promise<void>;
 	isPending: boolean;
 	startTransition: React.TransitionStartFunction;
@@ -44,8 +42,7 @@ const Color = ({
 	return (
 		<>
 			<TableRow key={color.id}>
-				<TableCell>{colorIndex + 1}</TableCell>
-				<TableCell>{color.id}</TableCell>
+				<TableCell className='hidden md:table-cell'>{color.id}</TableCell>
 				<TableCell className='capitalize'>{color.name}</TableCell>
 				<TableCell>
 					<div
@@ -55,7 +52,9 @@ const Color = ({
 						}}
 					/>
 				</TableCell>
-				<TableCell>{color.createdAt.toLocaleDateString()}</TableCell>
+				<TableCell className='hidden md:table-cell'>
+					{color.createdAt.toLocaleDateString()}
+				</TableCell>
 				<TableCell>
 					<DropdownMenu>
 						<DropdownMenuTrigger>

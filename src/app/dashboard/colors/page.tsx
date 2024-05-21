@@ -1,4 +1,5 @@
 import React from 'react';
+import { redirect } from 'next/navigation';
 
 import BodySection from '@/components/dashboard/BodySection';
 import HeadSection from '@/components/dashboard/HeadSection';
@@ -6,9 +7,20 @@ import HeadSection from '@/components/dashboard/HeadSection';
 import Table from './Table';
 import { getTotalColor, getColors } from './_utils/actions';
 
-const Page = async () => {
+const Page = async ({
+	searchParams,
+}: {
+	searchParams: {
+		[key: string]: string | string[] | undefined;
+	};
+}) => {
+	const { page } = searchParams;
+	if (!page || typeof page !== 'string') {
+		redirect('/dashboard/colors?page=1');
+	}
+
 	const totalColor = await getTotalColor();
-	const colors = await getColors();
+	const colors = await getColors({ page: Number(page) - 1 });
 
 	return (
 		<BodySection>
@@ -19,7 +31,10 @@ const Page = async () => {
 				newButtonPath='/dashboard/colors/create'
 			/>
 
-			<Table colors={colors} />
+			<Table
+				colors={colors}
+				page={Number(page)}
+			/>
 		</BodySection>
 	);
 };

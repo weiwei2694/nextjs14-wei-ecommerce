@@ -15,8 +15,9 @@ import { toast } from 'sonner';
 import type { GetColors } from './_utils/types';
 import { deleteColor } from './_utils/actions';
 import Color from './Color';
+import NextPrev from './NextPrev';
 
-const Table = ({ colors }: { colors: GetColors }) => {
+const Table = ({ colors, page }: { colors: GetColors; page: number }) => {
 	const [isPending, startTransition] = useTransition();
 
 	const handleDelete = async (id: string) => {
@@ -44,31 +45,35 @@ const Table = ({ colors }: { colors: GetColors }) => {
 		}
 	};
 
-	return colors && colors.length ? (
-		<TableShadcnUI>
-			<TableHeader>
-				<TableRow>
-					<TableHead>#</TableHead>
-					<TableHead>Id</TableHead>
-					<TableHead>Name</TableHead>
-					<TableHead>Value</TableHead>
-					<TableHead>Date</TableHead>
-					<TableHead>Action</TableHead>
-				</TableRow>
-			</TableHeader>
-			<TableBody>
-				{colors.map((color, colorIndex) => (
-					<Color
-						key={color.id}
-						color={color}
-						colorIndex={colorIndex}
-						handleDelete={handleDelete}
-						isPending={isPending}
-						startTransition={startTransition}
-					/>
-				))}
-			</TableBody>
-		</TableShadcnUI>
+	return colors && colors.data && colors.data.length ? (
+		<div className='flex flex-col gap-5'>
+			<TableShadcnUI>
+				<TableHeader>
+					<TableRow>
+						<TableHead className='hidden md:table-cell'>Id</TableHead>
+						<TableHead>Name</TableHead>
+						<TableHead>Value</TableHead>
+						<TableHead className='hidden md:table-cell'>Date</TableHead>
+						<TableHead>Action</TableHead>
+					</TableRow>
+				</TableHeader>
+				<TableBody>
+					{colors.data.map((color, _) => (
+						<Color
+							key={color.id}
+							color={color}
+							handleDelete={handleDelete}
+							isPending={isPending}
+							startTransition={startTransition}
+						/>
+					))}
+				</TableBody>
+			</TableShadcnUI>
+			<NextPrev
+				page={page}
+				hasNext={colors.hasNext}
+			/>
+		</div>
 	) : null;
 };
 
