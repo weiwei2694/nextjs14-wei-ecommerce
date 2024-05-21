@@ -6,7 +6,7 @@ import { db } from '@/db';
 
 import { revalidatePath } from 'next/cache';
 
-import type { SaveColor, GetTotalColor, GetColors, DeleteColor } from './types';
+import type { GetColor, SaveColor, GetTotalColor, GetColors, DeleteColor } from './types';
 
 export const saveColor = async ({ name, color }: { name: string, color: string }): Promise<SaveColor> => {
   try {
@@ -49,6 +49,21 @@ export const getColors = async (): Promise<GetColors> => {
     return colors;
   } catch (err) {
     console.error(`[ERROR_DASHBOARD_GET_COLORS]: ${err}`);
+  }
+}
+
+export const getColor = async ({ id }: { id: string }): Promise<GetColor> => {
+  try {
+    const color = await db.color.findFirst({
+      where: { id }
+    });
+    if (!color) {
+      throw new Error('Color not found.');
+    }
+
+    return color;
+  } catch (err) {
+    console.error(`[ERROR_DASHBOARD_GET_COLOR]: ${err}`);
   }
 }
 
