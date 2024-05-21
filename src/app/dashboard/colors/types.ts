@@ -11,3 +11,7 @@ export type GetColors = {
   createdAt: Date;
   updatedAt: Date;
 }[] | undefined;
+
+export type DeleteColor = {
+  success: boolean;
+};

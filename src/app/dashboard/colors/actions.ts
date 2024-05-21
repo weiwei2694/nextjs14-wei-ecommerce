@@ -5,7 +5,8 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import { db } from '@/db';
 
 import { revalidatePath } from 'next/cache';
-import { SaveColor, GetTotalColor, GetColors } from './types';
+
+import type { SaveColor, GetTotalColor, GetColors, DeleteColor } from './types';
 
 export const saveColor = async ({ name, color }: { name: string, color: string }): Promise<SaveColor> => {
   try {
@@ -48,5 +49,33 @@ export const getColors = async (): Promise<GetColors> => {
     return colors;
   } catch (err) {
     console.error(`[ERROR_DASHBOARD_GET_COLORS]: ${err}`);
+  }
+}
+
+export const deleteColor = async ({ id }: { id: string }): Promise<DeleteColor> => {
+  try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('You do not have access to this area');
+    }
+
+    const existingColor = await db.color.findFirst({
+      where: { id }
+    });
+    if (!existingColor) {
+      throw new Error('Color not found.');
+    }
+
+    await db.color.delete({
+      where: { id }
+    });
+
+    return { success: true }
+  } catch (err) {
+    throw err;
+  } finally {
+    revalidatePath('/dashboard/colors');
   }
 }
