@@ -54,13 +54,13 @@ const Form = ({ color: currentColor }: { color: Color }) => {
 		}
 
 		try {
-			const { success, data } = await updateColor({
+			const { success, data, message } = await updateColor({
 				id: currentColor.id,
 				name,
 				color,
 			});
 
-			if (success && data) {
+			if (!message && success && data) {
 				form.reset({
 					name: data.name,
 					color: data.color,
@@ -68,6 +68,16 @@ const Form = ({ color: currentColor }: { color: Color }) => {
 
 				toast.success('Color updated.');
 				router.push('/dashboard/colors');
+				return;
+			}
+
+			if (message === 'Name already exists.' && !success && !data) {
+				form.setError('name', { message });
+				return;
+			}
+
+			if (message === 'Color already exists.' && !success && !data) {
+				form.setError('color', { message });
 			}
 		} catch (err) {
 			console.error(`[ERROR: DASHBOARD_COLORS_CREATE]: ${err}`);

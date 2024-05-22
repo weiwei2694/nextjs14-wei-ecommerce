@@ -17,6 +17,16 @@ export const saveColor = async ({ name, color }: { name: string, color: string }
       throw new Error('You do not have access to this area');
     }
 
+    const existingName = await db.color.findFirst({ where: { name } });
+    if (existingName) {
+      return { success: false, message: 'Name already exists.' };
+    }
+
+    const existingColor = await db.color.findFirst({ where: { color } });
+    if (existingColor) {
+      return { success: false, message: 'Color already exists.' };
+    }
+
     await db.color.create({
       data: {
         name,
@@ -69,14 +79,14 @@ export const getColors = async ({
 
 export const getColor = async ({ id }: { id: string }): Promise<GetColor> => {
   try {
-    const color = await db.color.findFirst({
+    const isCurrentColorExist = await db.color.findFirst({
       where: { id }
     });
-    if (!color) {
+    if (!isCurrentColorExist) {
       throw new Error('Color not found.');
     }
 
-    return color;
+    return isCurrentColorExist;
   } catch (err) {
     console.error(`[ERROR_DASHBOARD_GET_COLOR]: ${err}`);
   }
@@ -91,10 +101,10 @@ export const deleteColor = async ({ id }: { id: string }): Promise<DeleteColor> 
       throw new Error('You do not have access to this area');
     }
 
-    const existingColor = await db.color.findFirst({
+    const isCurrentColorExist = await db.color.findFirst({
       where: { id }
     });
-    if (!existingColor) {
+    if (!isCurrentColorExist) {
       throw new Error('Color not found.');
     }
 
@@ -119,17 +129,31 @@ export const updateColor = async ({ id, name, color }: { id: string, name: strin
       throw new Error('You do not have access to this area');
     }
 
-    const existingColor = await db.color.findFirst({
+    const isCurrentColorExist = await db.color.findFirst({
       where: { id }
     });
-    if (!existingColor) {
+    if (!isCurrentColorExist) {
       throw new Error('Color not found.');
+    }
+
+    if (isCurrentColorExist.name !== name) {
+      const existingName = await db.color.findFirst({ where: { name } });
+      if (existingName) {
+        return { success: false, message: 'Name already exists.' };
+      }
+    }
+
+    if (isCurrentColorExist.color !== color) {
+      const existingColor = await db.color.findFirst({ where: { color } });
+      if (existingColor) {
+        return { success: false, message: 'Color already exists.' };
+      }
     }
 
     const newColor = await db.color.update({
       where: { id },
       data: { name, color }
-    })
+    });
 
     return { success: true, data: newColor };
   } catch (err) {

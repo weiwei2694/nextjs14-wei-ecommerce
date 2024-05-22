@@ -48,13 +48,23 @@ const Form = () => {
 		}
 
 		try {
-			const { success } = await saveColor({ name, color });
+			const { success, message } = await saveColor({ name, color });
 
-			if (success) {
+			if (success && !message) {
 				form.reset(defaultValues);
 
 				toast.success('Color created.');
 				router.push('/dashboard/colors');
+				return;
+			}
+
+			if (!success && message === 'Name already exists.') {
+				form.setError('name', { message });
+				return;
+			}
+
+			if (!success && message === 'Color already exists.') {
+				form.setError('color', { message });
 			}
 		} catch (err) {
 			console.error(`[ERROR: DASHBOARD_COLORS_CREATE]: ${err}`);
