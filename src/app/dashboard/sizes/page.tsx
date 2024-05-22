@@ -3,7 +3,7 @@ import React from 'react';
 import BodySection from '@/components/dashboard/BodySection';
 import HeadSection from '@/components/dashboard/HeadSection';
 
-import { getTotalSize } from './_lib/actions';
+import { getTotalSize } from './_utils/actions';
 
 const Page = async () => {
 	const totalSize = await getTotalSize();

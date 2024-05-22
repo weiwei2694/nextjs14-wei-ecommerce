@@ -50,8 +50,9 @@ model Color {
 }
 
 model Size {
-  id   String @id @default(uuid())
-  name String @unique @db.VarChar(100)
+  id    String @id @default(uuid())
+  name  String @unique @db.VarChar(100)
+  value String @unique @db.VarChar(10)
 
   products Product[]
 
