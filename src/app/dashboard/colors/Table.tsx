@@ -39,9 +39,9 @@ const Table = ({ colors, page }: { colors: GetColors; page: number }) => {
 					err === 'Color not found.'
 				) {
 					toast.error(err);
-				} else {
-					toast.error('Something went wrong.');
 				}
+			} else {
+				toast.error('Something went wrong.');
 			}
 		}
 	};

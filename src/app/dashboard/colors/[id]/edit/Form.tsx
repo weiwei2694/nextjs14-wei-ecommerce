@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { colorValidation } from '../../_utils/valitions';
+import { colorValidation } from '../../_utils/validations';
 import { updateColor } from '../../_utils/actions';
 
 import type { Color } from '@prisma/client';

@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { colorValidation } from '../_utils/valitions';
+import { colorValidation } from '../_utils/validations';
 import { saveColor } from '../_utils/actions';
 
 import { toast } from 'sonner';
