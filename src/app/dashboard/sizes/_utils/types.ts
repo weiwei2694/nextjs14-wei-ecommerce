@@ -15,3 +15,5 @@ export type SaveSize = {
 export type DeleteSize = {
   success: boolean;
 };
+
+export type GetSize = Size | undefined;

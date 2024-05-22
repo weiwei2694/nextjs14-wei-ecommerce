@@ -6,7 +6,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import { revalidatePath } from "next/cache";
 
-import type { GetSizes, GetTotalSize, SaveSize, DeleteSize } from "./types";
+import type { GetSizes, GetTotalSize, SaveSize, DeleteSize, GetSize } from "./types";
 
 export const getTotalSize = async (): Promise<GetTotalSize> => {
   try {
@@ -42,6 +42,22 @@ export const getSizes = async ({
     console.error(`[ERROR_DASHBOARD_GET_SIZES]: ${err}`);
   }
 }
+
+export const getSize = async ({ id }: { id: string }): Promise<GetSize> => {
+  try {
+    const isCurrentSize = await db.size.findFirst({
+      where: { id }
+    });
+    if (!isCurrentSize) {
+      throw new Error('Size not found.');
+    }
+
+    return isCurrentSize;
+  } catch (err) {
+    console.error(`[ERROR_DASHBOARD_GET_SIZE]: ${err}`);
+  }
+}
+
 
 export const saveSize = async ({
   name,
