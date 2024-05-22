@@ -126,3 +126,54 @@ export const deleteSize = async ({ id }: { id: string }): Promise<DeleteSize> =>
     revalidatePath('/dashboard/sizes');
   }
 }
+
+export const updateSize = async ({
+  id,
+  name,
+  value
+}: {
+  id: string;
+  name: string;
+  value: string;
+}) => {
+  try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('You do not have access to this area');
+    }
+
+    const isCurrentSizeExist = await db.size.findFirst({
+      where: { id }
+    });
+    if (!isCurrentSizeExist) {
+      throw new Error('Size not found.');
+    }
+
+    if (isCurrentSizeExist.name !== name) {
+      const existingName = await db.size.findFirst({ where: { name } });
+      if (existingName) {
+        return { success: false, message: 'Name already exists.' };
+      }
+    }
+
+    if (isCurrentSizeExist.value !== value) {
+      const existingValue = await db.size.findFirst({ where: { value } });
+      if (existingValue) {
+        return { success: false, message: 'Value already exists.' };
+      }
+    }
+
+    const newSize = await db.size.update({
+      where: { id },
+      data: { name, value }
+    });
+
+    return { success: true, data: newSize };
+  } catch (err) {
+    throw err;
+  } finally {
+    revalidatePath('/dashboard/sizes');
+  }
+}
