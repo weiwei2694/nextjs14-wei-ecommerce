@@ -10,13 +10,13 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import DataEmpty from '@/components/dashboard/DataEmpty';
+import NextPrev from '@/components/dashboard/NextPrev';
 
 import { toast } from 'sonner';
 
 import type { GetColors } from './_utils/types';
 import { deleteColor } from './_utils/actions';
 import Color from './Color';
-import NextPrev from './NextPrev';
 
 const Table = ({ colors, page }: { colors: GetColors; page: number }) => {
 	const [isPending, startTransition] = useTransition();
@@ -73,6 +73,7 @@ const Table = ({ colors, page }: { colors: GetColors; page: number }) => {
 			<NextPrev
 				page={page}
 				hasNext={colors.hasNext}
+				path='/dashboard/colors'
 			/>
 		</div>
 	) : (

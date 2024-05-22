@@ -10,13 +10,13 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import DataEmpty from '@/components/dashboard/DataEmpty';
+import NextPrev from '@/components/dashboard/NextPrev';
 
 import { toast } from 'sonner';
 
 import type { GetSizes } from './_utils/types';
 import { deleteSize } from './_utils/actions';
 import Size from './Size';
-import NextPrev from './NextPrev';
 
 const Table = ({ sizes, page }: { sizes: GetSizes; page: number }) => {
 	const [isPending, startTransition] = useTransition();
@@ -73,6 +73,7 @@ const Table = ({ sizes, page }: { sizes: GetSizes; page: number }) => {
 			<NextPrev
 				page={page}
 				hasNext={sizes.hasNext}
+				path='/dashboard/sizes'
 			/>
 		</div>
 	) : (

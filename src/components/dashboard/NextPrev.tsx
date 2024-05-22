@@ -3,21 +3,29 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 
-const NextPrev = ({ page, hasNext }: { page: number; hasNext: boolean }) => {
+const NextPrev = ({
+	page,
+	hasNext,
+	path,
+}: {
+	page: number;
+	hasNext: boolean;
+	path: string;
+}) => {
 	const router = useRouter();
 	const [isPendingPrev, startTransitionPrev] = useTransition();
 	const [isPendingNext, startTransitionNext] = useTransition();
 
 	const handleNextPrevious = (type: string, page: number) => {
 		if (type === 'next' && hasNext) {
-			router.push(`/dashboard/colors?page=${page + 1}`);
+			router.push(`${path}?page=${page + 1}`);
 			return;
 		}
 
 		if (type === 'prev' && page === 1) {
 			return;
 		} else {
-			router.push(`/dashboard/colors?page=${page - 1}`);
+			router.push(`${path}?page=${page - 1}`);
 		}
 	};
 
@@ -30,10 +38,10 @@ const NextPrev = ({ page, hasNext }: { page: number; hasNext: boolean }) => {
 					startTransitionPrev(() => handleNextPrevious('prev', page))
 				}
 				disabled={isPendingNext || isPendingPrev || page === 1}
-				loadingText='Prev'
+				loadingText='Previous'
 				isLoading={isPendingPrev}
 			>
-				Previus
+				Previous
 			</Button>
 			<Button
 				variant='ghost'
