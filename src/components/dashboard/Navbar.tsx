@@ -74,7 +74,9 @@ const NavListMobile = ({ pathname }: { pathname: string }) => {
 										href={list.href}
 										className={cn(
 											'text-zinc-900 tracking-tight text-sm ',
-											pathname === list.href ? 'font-semibold' : 'font-normal'
+											pathname.startsWith(list.href)
+												? 'font-semibold'
+												: 'font-normal'
 										)}
 									>
 										{list.name}
@@ -117,7 +119,9 @@ const Navbar = () => {
 								href={list.href}
 								className={cn(
 									'text-zinc-900 tracking-tight text-sm',
-									pathname === list.href ? 'font-semibold' : 'font-normal'
+									pathname.startsWith(list.href)
+										? 'font-semibold'
+										: 'font-normal'
 								)}
 							>
 								{list.name}
