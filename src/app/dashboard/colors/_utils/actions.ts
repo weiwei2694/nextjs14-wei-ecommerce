@@ -6,7 +6,16 @@ import { db } from '@/db';
 
 import { revalidatePath } from 'next/cache';
 
-import type { GetColor, SaveColor, GetTotalColor, GetColors, DeleteColor, UpdateColor } from './types';
+import type {
+  GetColor,
+  SaveColor,
+  GetTotalColor,
+  GetColors,
+  DeleteColor,
+  UpdateColor,
+  IsNameExist,
+  IsColorExist
+} from './types';
 
 export const saveColor = async ({ name, color }: { name: string, color: string }): Promise<SaveColor> => {
   try {
@@ -17,20 +26,10 @@ export const saveColor = async ({ name, color }: { name: string, color: string }
       throw new Error('You do not have access to this area');
     }
 
-    const existingName = await db.color.findFirst({ where: { name } });
-    if (existingName) {
-      return { success: false, message: 'Name already exists.' };
-    }
-
-    const existingColor = await db.color.findFirst({ where: { color } });
-    if (existingColor) {
-      return { success: false, message: 'Color already exists.' };
-    }
-
     await db.color.create({
       data: {
-        name,
-        color,
+        name: name.toLowerCase(),
+        color: color.toLowerCase(),
       },
     });
 
@@ -79,14 +78,14 @@ export const getColors = async ({
 
 export const getColor = async ({ id }: { id: string }): Promise<GetColor> => {
   try {
-    const isCurrentColorExist = await db.color.findFirst({
+    const existingColor = await db.color.findFirst({
       where: { id }
     });
-    if (!isCurrentColorExist) {
+    if (!existingColor) {
       throw new Error('Color not found.');
     }
 
-    return isCurrentColorExist;
+    return existingColor;
   } catch (err) {
     console.error(`[ERROR_DASHBOARD_GET_COLOR]: ${err}`);
   }
@@ -101,10 +100,8 @@ export const deleteColor = async ({ id }: { id: string }): Promise<DeleteColor> 
       throw new Error('You do not have access to this area');
     }
 
-    const isCurrentColorExist = await db.color.findFirst({
-      where: { id }
-    });
-    if (!isCurrentColorExist) {
+    const existingColor = await getColor({ id });
+    if (!existingColor) {
       throw new Error('Color not found.');
     }
 
@@ -129,30 +126,14 @@ export const updateColor = async ({ id, name, color }: { id: string, name: strin
       throw new Error('You do not have access to this area');
     }
 
-    const isCurrentColorExist = await db.color.findFirst({
-      where: { id }
-    });
-    if (!isCurrentColorExist) {
+    const existingColor = await getColor({ id });
+    if (!existingColor) {
       throw new Error('Color not found.');
-    }
-
-    if (isCurrentColorExist.name !== name) {
-      const existingName = await db.color.findFirst({ where: { name } });
-      if (existingName) {
-        return { success: false, message: 'Name already exists.' };
-      }
-    }
-
-    if (isCurrentColorExist.color !== color) {
-      const existingColor = await db.color.findFirst({ where: { color } });
-      if (existingColor) {
-        return { success: false, message: 'Color already exists.' };
-      }
     }
 
     const newColor = await db.color.update({
       where: { id },
-      data: { name, color }
+      data: { name: name.toLowerCase(), color: color.toLowerCase() }
     });
 
     return { success: true, data: newColor };
@@ -160,5 +141,25 @@ export const updateColor = async ({ id, name, color }: { id: string, name: strin
     throw err;
   } finally {
     revalidatePath('/dashboard/colors');
+  }
+}
+
+export const isNameExist = async (name: string): Promise<IsNameExist> => {
+  try {
+    const existingName = await db.color.findFirst({ where: { name } });
+
+    return Boolean(existingName);
+  } catch (err) {
+    console.error(`[ERROR_DASHBOARD_IS_NAME_EXIST]: ${err}`);
+  }
+}
+
+export const isColorExist = async (color: string): Promise<IsColorExist> => {
+  try {
+    const existingColor = await db.color.findFirst({ where: { color } });
+
+    return Boolean(existingColor);
+  } catch (err) {
+    console.error(`[ERROR_DASHBOARD_IS_COLOR_EXIST]: ${err}`);
   }
 }

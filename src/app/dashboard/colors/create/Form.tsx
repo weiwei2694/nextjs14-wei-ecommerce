@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { colorValidation } from '../_utils/validations';
+import { saveColorValidation } from '../_utils/validations';
 import { saveColor } from '../_utils/actions';
 
 import { toast } from 'sonner';
@@ -31,40 +31,22 @@ const Form = () => {
 		color: '',
 	};
 
-	const form = useForm<z.infer<typeof colorValidation>>({
-		resolver: zodResolver(colorValidation),
+	const form = useForm<z.infer<typeof saveColorValidation>>({
+		resolver: zodResolver(saveColorValidation),
 		defaultValues,
 	});
 
-	const onSubmit = async (values: z.infer<typeof colorValidation>) => {
+	const onSubmit = async (values: z.infer<typeof saveColorValidation>) => {
 		const { name, color } = values;
 
-		if (!CSS.supports('color', color)) {
-			form.setError('color', {
-				message: 'Color is not supported.',
-			});
-
-			return;
-		}
-
 		try {
-			const { success, message } = await saveColor({ name, color });
+			const { success } = await saveColor({ name, color });
 
-			if (success && !message) {
+			if (success) {
 				form.reset(defaultValues);
 
 				toast.success('Color created.');
 				router.push('/dashboard/colors');
-				return;
-			}
-
-			if (!success && message === 'Name already exists.') {
-				form.setError('name', { message });
-				return;
-			}
-
-			if (!success && message === 'Color already exists.') {
-				form.setError('color', { message });
 			}
 		} catch (err) {
 			console.error(`[ERROR: DASHBOARD_COLORS_CREATE]: ${err}`);

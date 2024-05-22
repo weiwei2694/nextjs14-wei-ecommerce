@@ -2,7 +2,6 @@ import type { Color } from "@prisma/client";
 
 export type SaveColor = {
   success: boolean;
-  message?: string;
 };
 
 export type GetTotalColor = number | undefined;
@@ -20,7 +19,6 @@ export type DeleteColor = {
 
 export type UpdateColor = {
   success: boolean;
-  message?: string;
   data?: {
     id: string;
     name: string;
@@ -29,3 +27,7 @@ export type UpdateColor = {
     updatedAt: Date;
   };
 }
+
+export type IsNameExist = boolean | undefined;
+
+export type IsColorExist = boolean | undefined;

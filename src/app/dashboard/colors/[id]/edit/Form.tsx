@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { colorValidation } from '../../_utils/validations';
+import { updateColorValidation } from '../../_utils/validations';
 import { updateColor } from '../../_utils/actions';
 
 import type { Color } from '@prisma/client';
@@ -28,39 +28,36 @@ import { toast } from 'sonner';
 const Form = ({ color: currentColor }: { color: Color }) => {
 	const router = useRouter();
 
-	const defaultValues = currentColor;
+	const defaultValues = {
+		id: currentColor.id,
+		name: currentColor.name,
+		color: currentColor.color,
+	};
 
-	const form = useForm<z.infer<typeof colorValidation>>({
-		resolver: zodResolver(colorValidation),
+	const form = useForm<z.infer<typeof updateColorValidation>>({
+		resolver: zodResolver(updateColorValidation),
 		defaultValues,
 	});
 
-	const onSubmit = async (values: z.infer<typeof colorValidation>) => {
+	const onSubmit = async (values: z.infer<typeof updateColorValidation>) => {
 		const { name, color } = values;
 
 		// There is nothing that needs to be updated, if the data is still the same
 		if (name === currentColor.name && color === currentColor.color) {
 			toast.success('Color updated.');
 			router.push('/dashboard/colors');
-			return;
-		}
-
-		if (!CSS.supports('color', color)) {
-			form.setError('color', {
-				message: 'Color is not supported.',
-			});
 
 			return;
 		}
 
 		try {
-			const { success, data, message } = await updateColor({
+			const { success, data } = await updateColor({
 				id: currentColor.id,
 				name,
 				color,
 			});
 
-			if (!message && success && data) {
+			if (success && data) {
 				form.reset({
 					name: data.name,
 					color: data.color,
@@ -68,16 +65,6 @@ const Form = ({ color: currentColor }: { color: Color }) => {
 
 				toast.success('Color updated.');
 				router.push('/dashboard/colors');
-				return;
-			}
-
-			if (message === 'Name already exists.' && !success && !data) {
-				form.setError('name', { message });
-				return;
-			}
-
-			if (message === 'Color already exists.' && !success && !data) {
-				form.setError('color', { message });
 			}
 		} catch (err) {
 			console.error(`[ERROR: DASHBOARD_COLORS_CREATE]: ${err}`);
