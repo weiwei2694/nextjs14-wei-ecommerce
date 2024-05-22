@@ -6,7 +6,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import { revalidatePath } from "next/cache";
 
-import type { GetSizes, GetTotalSize } from "./types";
+import type { GetSizes, GetTotalSize, SaveSize } from "./types";
 
 export const getTotalSize = async (): Promise<GetTotalSize> => {
   try {
@@ -49,7 +49,7 @@ export const saveSize = async ({
 }: {
   name: string;
   value: string;
-}) => {
+}): Promise<SaveSize> => {
   try {
     const { getUser } = getKindeServerSession();
     const user = await getUser();
@@ -79,6 +79,6 @@ export const saveSize = async ({
   } catch (err) {
     throw err;
   } finally {
-    revalidatePath('/dashboard/colors');
+    revalidatePath('/dashboard/sizes');
   }
 }

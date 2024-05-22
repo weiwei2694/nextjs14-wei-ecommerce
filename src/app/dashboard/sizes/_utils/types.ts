@@ -6,3 +6,8 @@ export type GetSizes = {
   data: Size[];
   hasNext: boolean;
 } | undefined;
+
+export type SaveSize = {
+  success: boolean;
+  message?: string;
+}
