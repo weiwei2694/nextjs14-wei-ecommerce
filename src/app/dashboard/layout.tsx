@@ -19,7 +19,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
 	return (
 		<div className={inter.className}>
 			<Navbar />
-			<main className='min-h-screen max-w-7xl mx-auto px-9 2xl:px-3'>
+			<main className='min-h-[calc(100vh-4rem-1px)] max-w-7xl mx-auto px-9 2xl:px-3'>
 				{children}
 			</main>
 		</div>
