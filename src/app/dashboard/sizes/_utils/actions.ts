@@ -6,7 +6,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import { revalidatePath } from "next/cache";
 
-import type { GetSizes, GetTotalSize, SaveSize } from "./types";
+import type { GetSizes, GetTotalSize, SaveSize, DeleteSize } from "./types";
 
 export const getTotalSize = async (): Promise<GetTotalSize> => {
   try {
@@ -76,6 +76,34 @@ export const saveSize = async ({
     });
 
     return { success: true };
+  } catch (err) {
+    throw err;
+  } finally {
+    revalidatePath('/dashboard/sizes');
+  }
+}
+
+export const deleteSize = async ({ id }: { id: string }): Promise<DeleteSize> => {
+  try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('You do not have access to this area');
+    }
+
+    const isCurrentSizeExist = await db.size.findFirst({
+      where: { id }
+    });
+    if (!isCurrentSizeExist) {
+      throw new Error('Size not found.');
+    }
+
+    await db.size.delete({
+      where: { id }
+    });
+
+    return { success: true }
   } catch (err) {
     throw err;
   } finally {

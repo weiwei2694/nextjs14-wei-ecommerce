@@ -11,3 +11,7 @@ export type SaveSize = {
   success: boolean;
   message?: string;
 }
+
+export type DeleteSize = {
+  success: boolean;
+};
