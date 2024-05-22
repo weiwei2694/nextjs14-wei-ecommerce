@@ -9,6 +9,7 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
+import DataEmpty from '@/components/dashboard/DataEmpty';
 
 import { toast } from 'sonner';
 
@@ -74,7 +75,9 @@ const Table = ({ colors, page }: { colors: GetColors; page: number }) => {
 				hasNext={colors.hasNext}
 			/>
 		</div>
-	) : null;
+	) : (
+		<DataEmpty href='/dashboard/colors/create' />
+	);
 };
 
 export default Table;
