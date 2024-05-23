@@ -36,18 +36,20 @@ export const saveProduct = async ({
       throw new Error('You do not have access to this area');
     }
 
-    await db.product.create({
+    const newProduct = await db.product.create({
       data: {
         title,
         price: Number(price),
         description,
         categoryId,
         colorId,
-        sizeId
+        sizeId,
+        isFeatured,
+        isArchived
       }
     })
 
-    return { success: true };
+    return { data: newProduct, success: true };
   } catch (err) {
     throw err;
   } finally {
