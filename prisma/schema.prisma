@@ -18,8 +18,8 @@ model User {
 
 model Product {
   id          String  @id @default(uuid())
-  title       String
-  price       String
+  title       String  @db.VarChar(200)
+  price       Float
   description String  @db.Text
   isFeatured  Boolean @default(false)
   isArchived  Boolean @default(false)
