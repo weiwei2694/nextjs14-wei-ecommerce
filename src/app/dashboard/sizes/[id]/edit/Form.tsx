@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { sizeValidation } from '../../_utils/validations';
+import { updateSizeValidation } from '../../_utils/validations';
 import { updateSize } from '../../_utils/actions';
 
 import type { Size } from '@prisma/client';
@@ -28,14 +28,18 @@ import { toast } from 'sonner';
 const Form = ({ size: currentSize }: { size: Size }) => {
 	const router = useRouter();
 
-	const defaultValues = currentSize;
+	const defaultValues = {
+		id: currentSize.id,
+		name: currentSize.name,
+		value: currentSize.value,
+	};
 
-	const form = useForm<z.infer<typeof sizeValidation>>({
-		resolver: zodResolver(sizeValidation),
+	const form = useForm<z.infer<typeof updateSizeValidation>>({
+		resolver: zodResolver(updateSizeValidation),
 		defaultValues,
 	});
 
-	const onSubmit = async (values: z.infer<typeof sizeValidation>) => {
+	const onSubmit = async (values: z.infer<typeof updateSizeValidation>) => {
 		const { name, value } = values;
 
 		// There is nothing that needs to be updated, if the data is still the same
@@ -46,13 +50,13 @@ const Form = ({ size: currentSize }: { size: Size }) => {
 		}
 
 		try {
-			const { success, data, message } = await updateSize({
+			const { success, data } = await updateSize({
 				id: currentSize.id,
 				name,
 				value,
 			});
 
-			if (!message && success && data) {
+			if (success && data) {
 				form.reset({
 					name: data.name,
 					value: data.value,
@@ -60,16 +64,6 @@ const Form = ({ size: currentSize }: { size: Size }) => {
 
 				toast.success('Size updated.');
 				router.push('/dashboard/sizes');
-				return;
-			}
-
-			if (message === 'Name already exists.' && !success && !data) {
-				form.setError('name', { message });
-				return;
-			}
-
-			if (message === 'Value already exists.' && !success && !data) {
-				form.setError('value', { message });
 			}
 		} catch (err) {
 			console.error(`[ERROR: DASHBOARD_SIZE_CREATE]: ${err}`);

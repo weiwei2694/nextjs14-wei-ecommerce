@@ -9,7 +9,6 @@ export type GetSizes = {
 
 export type SaveSize = {
   success: boolean;
-  message?: string;
 }
 
 export type DeleteSize = {
@@ -17,3 +16,12 @@ export type DeleteSize = {
 };
 
 export type GetSize = Size | undefined;
+
+export type UpdateSize = {
+  success: boolean;
+  data: Size;
+}
+
+export type IsNameExist = boolean | undefined;
+
+export type IsValueExist = boolean | undefined;

@@ -6,7 +6,7 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import { revalidatePath } from "next/cache";
 
-import type { GetSizes, GetTotalSize, SaveSize, DeleteSize, GetSize } from "./types";
+import type { UpdateSize, GetSizes, GetTotalSize, SaveSize, DeleteSize, GetSize, IsValueExist, IsNameExist } from "./types";
 
 export const getTotalSize = async (): Promise<GetTotalSize> => {
   try {
@@ -45,14 +45,14 @@ export const getSizes = async ({
 
 export const getSize = async ({ id }: { id: string }): Promise<GetSize> => {
   try {
-    const isCurrentSize = await db.size.findFirst({
+    const existingSize = await db.size.findFirst({
       where: { id }
     });
-    if (!isCurrentSize) {
+    if (!existingSize) {
       throw new Error('Size not found.');
     }
 
-    return isCurrentSize;
+    return existingSize;
   } catch (err) {
     console.error(`[ERROR_DASHBOARD_GET_SIZE]: ${err}`);
   }
@@ -74,20 +74,9 @@ export const saveSize = async ({
       throw new Error('You do not have access to this area');
     }
 
-    const existingSizeName = await db.size.findFirst({ where: { name } })
-    if (existingSizeName) {
-      return { success: false, message: 'Size name already exists.' };
-    }
-
-    const existingSizeValue = await db.size.findFirst({ where: { value } })
-    if (existingSizeValue) {
-      return { success: false, message: 'Size value already exists.' };
-    }
-
     await db.size.create({
       data: {
-        name,
-        value,
+        name: name.toLowerCase(), value: value.toUpperCase()
       },
     });
 
@@ -108,10 +97,10 @@ export const deleteSize = async ({ id }: { id: string }): Promise<DeleteSize> =>
       throw new Error('You do not have access to this area');
     }
 
-    const isCurrentSizeExist = await db.size.findFirst({
+    const existingSize = await db.size.findFirst({
       where: { id }
     });
-    if (!isCurrentSizeExist) {
+    if (!existingSize) {
       throw new Error('Size not found.');
     }
 
@@ -135,7 +124,7 @@ export const updateSize = async ({
   id: string;
   name: string;
   value: string;
-}) => {
+}): Promise<UpdateSize> => {
   try {
     const { getUser } = getKindeServerSession();
     const user = await getUser();
@@ -144,30 +133,16 @@ export const updateSize = async ({
       throw new Error('You do not have access to this area');
     }
 
-    const isCurrentSizeExist = await db.size.findFirst({
+    const existingSize = await db.size.findFirst({
       where: { id }
     });
-    if (!isCurrentSizeExist) {
+    if (!existingSize) {
       throw new Error('Size not found.');
-    }
-
-    if (isCurrentSizeExist.name !== name) {
-      const existingName = await db.size.findFirst({ where: { name } });
-      if (existingName) {
-        return { success: false, message: 'Name already exists.' };
-      }
-    }
-
-    if (isCurrentSizeExist.value !== value) {
-      const existingValue = await db.size.findFirst({ where: { value } });
-      if (existingValue) {
-        return { success: false, message: 'Value already exists.' };
-      }
     }
 
     const newSize = await db.size.update({
       where: { id },
-      data: { name, value }
+      data: { name: name.toLowerCase(), value: value.toUpperCase() }
     });
 
     return { success: true, data: newSize };
@@ -175,5 +150,29 @@ export const updateSize = async ({
     throw err;
   } finally {
     revalidatePath('/dashboard/sizes');
+  }
+}
+
+export const isNameExist = async (name: string): Promise<IsNameExist> => {
+  try {
+    const existingName = await db.size.findFirst({
+      where: { name: name.toLowerCase() }
+    })
+
+    return Boolean(existingName);
+  } catch (err) {
+    console.error(`[ERROR_IS_NAME_EXIST]: ${err}`);
+  }
+}
+
+export const isValueExist = async (value: string): Promise<IsValueExist> => {
+  try {
+    const existingValue = await db.size.findFirst({
+      where: { value: value.toUpperCase() }
+    });
+
+    return Boolean(existingValue);
+  } catch (err) {
+    console.error(`[ERROR_IS_VALUE_EXIST]: ${err}`);
   }
 }

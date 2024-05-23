@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { sizeValidation } from '../_utils/validations';
+import { saveSizeValidation } from '../_utils/validations';
 import { saveSize } from '../_utils/actions';
 
 import { toast } from 'sonner';
@@ -31,33 +31,22 @@ const Form = () => {
 		value: '',
 	};
 
-	const form = useForm<z.infer<typeof sizeValidation>>({
-		resolver: zodResolver(sizeValidation),
+	const form = useForm<z.infer<typeof saveSizeValidation>>({
+		resolver: zodResolver(saveSizeValidation),
 		defaultValues,
 	});
 
-	const onSubmit = async (values: z.infer<typeof sizeValidation>) => {
+	const onSubmit = async (values: z.infer<typeof saveSizeValidation>) => {
 		const { name, value } = values;
 
 		try {
-			const { success, message } = await saveSize({ name, value });
+			const { success } = await saveSize({ name, value });
 
-			if (success && !message) {
+			if (success) {
 				form.reset(defaultValues);
 
 				toast.success('Size created.');
 				router.push('/dashboard/sizes');
-				return;
-			}
-
-			if (!success && message === 'Size name already exists.') {
-				form.setError('name', { message });
-				return;
-			}
-
-			if (!success && message === 'Size value already exists.') {
-				form.setError('value', { message });
-				return;
 			}
 		} catch (err) {
 			console.error(`[ERROR: DASHBOARD_SIZE_CREATE]: ${err}`);
