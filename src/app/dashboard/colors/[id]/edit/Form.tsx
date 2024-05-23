@@ -45,7 +45,7 @@ const Form = ({ color: currentColor }: { color: Color }) => {
 		// There is nothing that needs to be updated, if the data is still the same
 		if (name === currentColor.name && color === currentColor.color) {
 			toast.success('Color updated.');
-			router.push('/dashboard/colors');
+			router.push('/dashboard/colors?page=1');
 
 			return;
 		}
@@ -64,10 +64,10 @@ const Form = ({ color: currentColor }: { color: Color }) => {
 				});
 
 				toast.success('Color updated.');
-				router.push('/dashboard/colors');
+				router.push('/dashboard/colors?page=1');
 			}
 		} catch (err) {
-			console.error(`[ERROR: DASHBOARD_COLORS_CREATE]: ${err}`);
+			console.error(`[ERROR_UPDATE_COLOR]: ${err}`);
 
 			if (typeof err === 'string') {
 				if (

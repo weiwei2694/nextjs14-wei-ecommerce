@@ -46,10 +46,10 @@ const Form = () => {
 				form.reset(defaultValues);
 
 				toast.success('Size created.');
-				router.push('/dashboard/sizes');
+				router.push('/dashboard/sizes?page=1');
 			}
 		} catch (err) {
-			console.error(`[ERROR: DASHBOARD_SIZE_CREATE]: ${err}`);
+			console.error(`[ERROR_SAVE_SIZE]: ${err}`);
 
 			if (
 				typeof err === 'string' &&

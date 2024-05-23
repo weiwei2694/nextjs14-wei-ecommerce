@@ -64,7 +64,7 @@ const Form = ({ category: currentCategory }: { category: Category }) => {
 				router.push('/dashboard/categories?page=1');
 			}
 		} catch (err) {
-			console.error(`[ERROR: DASHBOARD_CATEGORY_UPDATE]: ${err}`);
+			console.error(`[ERROR_UPDATE_CATEGORY]: ${err}`);
 
 			if (typeof err === 'string') {
 				if (

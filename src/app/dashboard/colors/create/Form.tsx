@@ -49,7 +49,7 @@ const Form = () => {
 				router.push('/dashboard/colors');
 			}
 		} catch (err) {
-			console.error(`[ERROR: DASHBOARD_COLORS_CREATE]: ${err}`);
+			console.error(`[ERROR_SAVE_COLOR]: ${err}`);
 
 			if (
 				typeof err === 'string' &&

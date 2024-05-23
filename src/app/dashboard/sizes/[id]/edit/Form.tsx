@@ -45,7 +45,7 @@ const Form = ({ size: currentSize }: { size: Size }) => {
 		// There is nothing that needs to be updated, if the data is still the same
 		if (name === currentSize.name && currentSize.value === value) {
 			toast.success('Size updated.');
-			router.push('/dashboard/sizes');
+			router.push('/dashboard/sizes?page=1');
 			return;
 		}
 
@@ -63,10 +63,10 @@ const Form = ({ size: currentSize }: { size: Size }) => {
 				});
 
 				toast.success('Size updated.');
-				router.push('/dashboard/sizes');
+				router.push('/dashboard/sizes?page=1');
 			}
 		} catch (err) {
-			console.error(`[ERROR: DASHBOARD_SIZE_CREATE]: ${err}`);
+			console.error(`[ERROR_UPDATE_SIZE]: ${err}`);
 
 			if (typeof err === 'string') {
 				if (
