@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 import BodySection from '@/components/dashboard/BodySection';
 import HeadSection from '@/components/dashboard/HeadSection';
 
-import { getTotalCategory } from './_utils/actions';
+import { getTotalCategory, getCategories } from './_utils/actions';
+import Table from './Table';
 
 const Page = async ({
 	searchParams,
@@ -19,6 +20,7 @@ const Page = async ({
 	}
 
 	const totalCategory = await getTotalCategory();
+	const categories = await getCategories({ page: Number(page) - 1 });
 
 	return (
 		<BodySection>
@@ -27,6 +29,11 @@ const Page = async ({
 				subtitle='Manage categories for your product'
 				isNewButtonVisible
 				newButtonPath='/dashboard/categories/create'
+			/>
+
+			<Table
+				categories={categories}
+				page={Number(page)}
 			/>
 		</BodySection>
 	);

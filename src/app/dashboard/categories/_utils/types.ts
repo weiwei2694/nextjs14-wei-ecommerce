@@ -1,3 +1,5 @@
+import { Category } from "@prisma/client";
+
 export type GetTotalCategory = number | undefined;
 
 export type SaveCategory = {
@@ -5,3 +7,12 @@ export type SaveCategory = {
 }
 
 export type IsNameExist = boolean | undefined;
+
+export type GetCategories = {
+  data: Category[];
+  hasNext: boolean;
+} | undefined
+
+export type DeleteCategory = {
+  success: boolean;
+}
