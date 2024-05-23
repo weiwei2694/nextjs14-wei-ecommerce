@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 
-import type { GetTotalCategory, SaveCategory } from './types';
+import type { GetTotalCategory, IsNameExist, SaveCategory } from './types';
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
@@ -31,11 +31,6 @@ export const saveCategory = async ({
       throw new Error('You do not have access to this area');
     }
 
-    const existingName = await db.category.findFirst({ where: { name } });
-    if (existingName) {
-      return { success: false, message: 'Name already exists.' };
-    }
-
     await db.category.create({
       data: {
         name
@@ -47,5 +42,17 @@ export const saveCategory = async ({
     throw err;
   } finally {
     revalidatePath('/dashboard/categories');
+  }
+}
+
+export const isNameExist = async (name: string): Promise<IsNameExist> => {
+  try {
+    const existingName = await db.category.findFirst({
+      where: { name }
+    });
+
+    return Boolean(existingName);
+  } catch (err) {
+    console.error(`[ERROR_IS_NAME_EXIST]: ${err}`);
   }
 }

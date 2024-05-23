@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
-import { categoryValidation } from '../_utils/validations';
+import { saveCategoryValidation } from '../_utils/validations';
 import { saveCategory } from '../_utils/actions';
 
 import { toast } from 'sonner';
@@ -30,27 +30,22 @@ const Form = () => {
 		name: '',
 	};
 
-	const form = useForm<z.infer<typeof categoryValidation>>({
-		resolver: zodResolver(categoryValidation),
+	const form = useForm<z.infer<typeof saveCategoryValidation>>({
+		resolver: zodResolver(saveCategoryValidation),
 		defaultValues,
 	});
 
-	const onSubmit = async (values: z.infer<typeof categoryValidation>) => {
+	const onSubmit = async (values: z.infer<typeof saveCategoryValidation>) => {
 		const { name } = values;
 
 		try {
-			const { success, message } = await saveCategory({ name });
+			const { success } = await saveCategory({ name });
 
-			if (success && !message) {
+			if (success) {
 				form.reset(defaultValues);
 
 				toast.success('Category created.');
 				router.push('/dashboard/categories');
-				return;
-			}
-
-			if (!success && message === 'Name already exists.') {
-				form.setError('name', { message });
 			}
 		} catch (err) {
 			console.error(`[ERROR: DASHBOARD_CATEGORY_CREATE]: ${err}`);

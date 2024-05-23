@@ -1,6 +1,7 @@
-export type GetTotalCategory = number | undefined;;
+export type GetTotalCategory = number | undefined;
 
 export type SaveCategory = {
   success: boolean;
-  message?: string;
 }
+
+export type IsNameExist = boolean | undefined;
