@@ -2,7 +2,7 @@
 
 import { db } from "@/db";
 
-import type { DeleteCategory, GetCategories, GetTotalCategory, IsNameExist, SaveCategory } from './types';
+import type { DeleteCategory, GetCategories, GetCategory, GetTotalCategory, IsNameExist, SaveCategory, UpdateCategory } from './types';
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
@@ -43,6 +43,25 @@ export const getCategories = async ({
   }
 }
 
+export const getCategory = async ({
+  id
+}: {
+  id: string
+}): Promise<GetCategory> => {
+  try {
+    const existingCategory = await db.category.findUnique({
+      where: { id }
+    })
+    if (!existingCategory) {
+      throw new Error('Category not found.');
+    }
+
+    return existingCategory
+  } catch (err) {
+    console.error(`[ERROR_GET_CATEGORY]: ${err}`);
+  }
+}
+
 export const saveCategory = async ({
   name
 }: {
@@ -58,7 +77,7 @@ export const saveCategory = async ({
 
     await db.category.create({
       data: {
-        name
+        name: name.toLowerCase()
       },
     });
 
@@ -91,10 +110,36 @@ export const deleteCategory = async ({
   }
 }
 
+export const updateCategory = async ({
+  id,
+  name
+}: {
+  id: string;
+  name: string;
+}): Promise<UpdateCategory> => {
+  try {
+    const existingCategory = await db.category.findUnique({ where: { id } });
+    if (!existingCategory) {
+      throw new Error('Category not found.');
+    }
+
+    const newCategory = await db.category.update({
+      where: { id },
+      data: { name: name.toLowerCase() }
+    });
+
+    return { success: true, data: newCategory };
+  } catch (err) {
+    throw err;
+  } finally {
+    revalidatePath('/dashboard/categories');
+  }
+}
+
 export const isNameExist = async (name: string): Promise<IsNameExist> => {
   try {
     const existingName = await db.category.findFirst({
-      where: { name }
+      where: { name: name.toLowerCase() }
     });
 
     return Boolean(existingName);

@@ -16,3 +16,10 @@ export type GetCategories = {
 export type DeleteCategory = {
   success: boolean;
 }
+
+export type GetCategory = Category | undefined;
+
+export type UpdateCategory = {
+  data: Category;
+  success: boolean;
+}
