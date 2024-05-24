@@ -52,6 +52,25 @@ export const getProducts = async ({
   }
 }
 
+export const getProduct = async ({
+  id
+}: {
+  id: string;
+}) => {
+  try {
+    const existingProduct = await db.product.findUnique({
+      where: { id }
+    });
+    if (!existingProduct) {
+      throw new Error('Product not found.');
+    }
+
+    return existingProduct;
+  } catch (err) {
+    console.error(`[ERROR_GET_PRODUCT]: ${err}`);
+  }
+}
+
 export const saveProduct = async ({
   title,
   price,
