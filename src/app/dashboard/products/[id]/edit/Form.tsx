@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useRef, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+
+import { ImagePlus, LoaderCircle, Trash } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,14 +29,20 @@ import {
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 
 import { updateProductValidation } from '../../_utils/validations';
-import { updateProduct } from '../../_utils/actions';
+import { deleteProductImage, updateProduct } from '../../_utils/actions';
 import type { Product } from '../../_utils/types';
 
 import { toast } from 'sonner';
 
-import type { Category, Color, Size } from '@prisma/client';
+import { useUploadThing } from '@/lib/uploadthing';
+
+import type { Category, Color, Image, Size } from '@prisma/client';
+
+import useTotalSizeMb from '@/hooks/useTotalSizeMb';
 
 const Form = ({
 	product: currentProduct,
@@ -49,6 +57,107 @@ const Form = ({
 }) => {
 	const router = useRouter();
 
+	// combines existing photo sizes and previews
+	const { res: DEFAULT_TOTAL_SIZE_MB, isLoad } = useTotalSizeMb(
+		currentProduct.images
+	);
+	const MAX_FILE_SIZE_MB = 4;
+	const [totalSizeMb, setTotalSizeMb] = useState<number>(0);
+
+	React.useEffect(() => {
+		setTotalSizeMb(DEFAULT_TOTAL_SIZE_MB);
+	}, [DEFAULT_TOTAL_SIZE_MB]);
+
+	// previews
+	const [previews, setPreviews] = useState<string[] | null>(null);
+	const [files, setFiles] = useState<File[] | null>(null);
+	const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+	// existing image
+	const [images, setImages] = useState<Image[]>(currentProduct.images);
+	const [isPending, startTransition] = useTransition();
+
+	const { startUpload } = useUploadThing('imageUploader');
+
+	const handlePreviews = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const selectedFiles = e.target.files;
+
+		if (selectedFiles) {
+			const newFiles = Array.from(selectedFiles);
+			let totalSize = totalSizeMb * (1024 * 1024);
+
+			for (const file of newFiles) {
+				totalSize += file.size;
+			}
+
+			if (totalSize / (1024 * 1024) < MAX_FILE_SIZE_MB) {
+				setFiles((prevFiles) => [...(prevFiles || []), ...newFiles]);
+
+				const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+				setPreviews((prevPreviews) => [
+					...(prevPreviews || []),
+					...newPreviews,
+				]);
+
+				setTotalSizeMb(totalSize / (1024 * 1024));
+			} else {
+				toast.error(
+					`Total file size exceeds ${MAX_FILE_SIZE_MB} MB. Please select files with total size below ${MAX_FILE_SIZE_MB} MB.`
+				);
+			}
+		}
+	};
+
+	const handleDeletePreview = (index: number) => {
+		setTotalSizeMb((prev) => prev - files![index].size / (1024 * 1024));
+
+		setFiles((prevFiles) => (prevFiles || []).filter((_, i) => i !== index));
+		setPreviews((prevPreviews) =>
+			(prevPreviews || []).filter((_, i) => i !== index)
+		);
+	};
+
+	const handleDeleteImage = async ({ id, url }: Image) => {
+		try {
+			const { success } = await deleteProductImage({ id, url });
+
+			if (success) {
+				setImages((prevImages) =>
+					prevImages.filter((image) => image.id !== id)
+				);
+
+				// Recalculate total size manually
+				const response = await fetch(url);
+				const blob = await response.blob();
+				const removedImageSizeMb = blob.size / (1024 * 1024);
+				setTotalSizeMb((prev) => prev - removedImageSizeMb);
+			}
+		} catch (err) {
+			console.error(`[ERROR_DELETE_PRODUCT_IMAGE]: ${err}`);
+
+			if (typeof err === 'string') {
+				if (
+					err === 'Image not found.' ||
+					err === 'You do not have access to this area'
+				) {
+					toast.error(err);
+				}
+			} else {
+				toast.error('Something went wrong. Please try again later.');
+			}
+		}
+	};
+
+	const emptyDefaultValues = {
+		title: '',
+		price: '',
+		description: '',
+		categoryId: '',
+		colorId: '',
+		sizeId: '',
+		isFeatured: false,
+		isArchived: false,
+	};
 	const defaultValues = {
 		id: currentProduct.id,
 		title: currentProduct.title,
@@ -66,6 +175,14 @@ const Form = ({
 		defaultValues,
 	});
 
+	const resetFormState = () => {
+		form.reset(emptyDefaultValues);
+		setPreviews(null);
+		setFiles(null);
+		setTotalSizeMb(0);
+		setImages([]);
+	};
+
 	const onSubmit = async (values: z.infer<typeof updateProductValidation>) => {
 		const {
 			id,
@@ -79,8 +196,13 @@ const Form = ({
 			isArchived,
 		} = values;
 
-		// There is nothing that needs to be updated, if the data is still the same
-		if (
+		if (!files?.length && !images?.length) {
+			toast.error('Please select at least one image.');
+
+			return;
+		}
+
+		const isProductDataSame =
 			currentProduct.title === title &&
 			currentProduct.price === Number(price) &&
 			currentProduct.description === description &&
@@ -88,15 +210,26 @@ const Form = ({
 			currentProduct.colorId === colorId &&
 			currentProduct.sizeId === sizeId &&
 			currentProduct.isFeatured === isFeatured &&
-			currentProduct.isArchived === isArchived
-		) {
-			toast.success('Product updated.');
-			router.push('/dashboard/products?page=1');
-
-			return;
-		}
+			currentProduct.isArchived === isArchived;
 
 		try {
+			// There is nothing that needs to be updated, if the data is still the same (except images)
+			if (isProductDataSame) {
+				if (files?.length && previews?.length) {
+					await startUpload(files, {
+						productId: currentProduct.id,
+					});
+
+					await updateProduct({ onlyUpdateImages: true });
+				}
+
+				resetFormState();
+				toast.success('Product updated.');
+				router.push('/dashboard/products?page=1');
+
+				return;
+			}
+
 			const { success, data } = await updateProduct({
 				id,
 				title,
@@ -110,17 +243,13 @@ const Form = ({
 			});
 
 			if (success && data) {
-				form.reset({
-					title: data.title,
-					price: String(data.price),
-					description: data.description,
-					categoryId: data.categoryId,
-					colorId: data.colorId,
-					sizeId: data.sizeId,
-					isFeatured: data.isFeatured,
-					isArchived: data.isArchived,
-				});
+				if (files?.length && previews?.length) {
+					await startUpload(files, {
+						productId: currentProduct.id,
+					});
+				}
 
+				resetFormState();
 				toast.success('Product updated.');
 				router.push('/dashboard/products?page=1');
 			}
@@ -144,6 +273,122 @@ const Form = ({
 
 	return (
 		<>
+			<div className='flex flex-col space-y-3'>
+				<div className='flex justify-between items-center'>
+					<Label
+						htmlFor='images'
+						className='w-fit'
+					>
+						Images{' '}
+						<Badge className='ml-1.5'>PNG, JPG, JPEG, WEBP - MAX 4MB</Badge>
+					</Label>
+
+					<Button
+						size='sm'
+						disabled={true}
+						className='pointer-events-none'
+					>
+						{isLoad ? (
+							<>{totalSizeMb.toFixed(2)}MB</>
+						) : (
+							<LoaderCircle className='w-4 h-4 animate-spin mr-1.5' />
+						)}{' '}
+						/ {MAX_FILE_SIZE_MB.toFixed(2)}MB
+					</Button>
+				</div>
+
+				{images.length || (previews?.length && files?.length) ? (
+					<div className='flex flex-wrap gap-5'>
+						{previews?.length && files?.length
+							? previews.map((preview, previewIndex) => (
+									<div
+										key={previewIndex}
+										className='relative w-fit'
+									>
+										<img
+											src={preview}
+											alt='preview img'
+											className='w-[220px] h-[220px] rounded-lg object-cover'
+										/>
+
+										<div className='absolute top-3 right-3'>
+											<Button
+												size='sm'
+												variant='destructive'
+												disabled={isLoading}
+												onClick={() => handleDeletePreview(previewIndex)}
+											>
+												<Trash className='w-4 h-4' />
+											</Button>
+										</div>
+									</div>
+							  ))
+							: null}
+
+						{images.length
+							? images.map((image, previewIndex) => (
+									<div
+										key={previewIndex}
+										className='relative w-fit'
+									>
+										<img
+											src={image.url}
+											alt='preview img'
+											loading='lazy'
+											className='w-[220px] h-[220px] rounded-lg object-cover'
+										/>
+
+										<div className='absolute top-3 right-3'>
+											<Button
+												size='sm'
+												variant='destructive'
+												disabled={isPending || isLoading}
+												onClick={() => {
+													startTransition(() => {
+														const promise = handleDeleteImage(image);
+
+														toast.promise(promise, {
+															loading: 'Deleting image...',
+															success: 'Image deleted',
+															error: 'Failed to delete image',
+														});
+													});
+												}}
+											>
+												<Trash className='w-4 h-4' />
+											</Button>
+										</div>
+									</div>
+							  ))
+							: null}
+					</div>
+				) : null}
+
+				<input
+					type='file'
+					hidden
+					accept='image/png, image/jpg, image/jpeg, image/webp'
+					id='images'
+					name='images'
+					multiple
+					onChange={handlePreviews}
+					ref={fileInputRef}
+					disabled={isPending || isLoading}
+				/>
+
+				<Button
+					className='w-fit'
+					variant='secondary'
+					disabled={isPending || isLoading}
+					onClick={() => fileInputRef.current?.click()}
+				>
+					<ImagePlus className='mr-1.5 w-4 h-4' />
+					{images.length || (files?.length && previews?.length)
+						? 'Add more Image'
+						: 'Upload an Image'}
+				</Button>
+			</div>
+
 			<FormShadcnUI {...form}>
 				<form
 					onSubmit={form.handleSubmit(onSubmit)}
@@ -159,7 +404,6 @@ const Form = ({
 									<FormControl>
 										<Input
 											placeholder='Title'
-											autoFocus
 											{...field}
 										/>
 									</FormControl>

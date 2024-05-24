@@ -11,9 +11,7 @@ export const ourFileRouter = {
     .input(z.object({ productId: z.string().uuid() }))
     .middleware(async ({ input }) => ({ input }))
     .onUploadComplete(async ({ metadata: { input: { productId } }, file }) => {
-      console.info(file.url)
       await db.image.create({ data: { productId, url: file.url } });
-
       return { success: true };
     }),
 } satisfies FileRouter;

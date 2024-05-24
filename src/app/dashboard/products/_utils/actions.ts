@@ -6,7 +6,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
 import { revalidatePath } from 'next/cache';
 
-import type { SaveProduct, GetTotalProduct, GetProducts, DeleteProduct, GetProduct } from './types';
+import type { SaveProduct, GetTotalProduct, GetProducts, DeleteProduct, GetProduct, DeleteProductImage, UpdateProduct } from './types';
 
 import type { Category, Color, Size } from '@prisma/client';
 
@@ -37,6 +37,7 @@ export const getProducts = async ({
         category: true,
         size: true,
         color: true,
+        images: true,
       },
       skip,
       take: per_page
@@ -64,6 +65,11 @@ export const getProduct = async ({
         category: true,
         size: true,
         color: true,
+        images: {
+          orderBy: {
+            createdAt: 'desc'
+          }
+        }
       }
     });
     if (!existingProduct) {
@@ -132,23 +138,33 @@ export const updateProduct = async ({
   colorId,
   sizeId,
   isFeatured,
-  isArchived
+  isArchived,
+
+  onlyUpdateImages
 }: {
-  id: string;
-  title: string;
-  price: string;
-  description: string;
-  categoryId: string;
-  colorId: string;
-  sizeId: string;
-  isFeatured: boolean;
-  isArchived: boolean;
-}) => {
+  id?: string;
+  title?: string;
+  price?: string;
+  description?: string;
+  categoryId?: string;
+  colorId?: string;
+  sizeId?: string;
+  isFeatured?: boolean;
+  isArchived?: boolean;
+
+  onlyUpdateImages?: boolean;
+}): Promise<UpdateProduct> => {
   try {
     const { getUser } = getKindeServerSession()
     const user = await getUser();
     if (!user || user.email !== process.env.ADMIN_EMAIL) {
       throw new Error('You do not have access to this area');
+    }
+
+    // If onlyUpdateImages is true, then we only have to revalidate the products page
+    if (onlyUpdateImages) {
+      revalidatePath('/dashboard/products');
+      return { success: true };
     }
 
     const existingProduct = await db.product.findUnique({ where: { id } });
@@ -208,6 +224,38 @@ export const deleteProduct = async ({
     await db.product.delete({
       where: { id }
     });
+
+    return { success: true };
+  } catch (err) {
+    throw err;
+  } finally {
+    revalidatePath('/dashboard/products');
+  }
+}
+
+export const deleteProductImage = async ({
+  id,
+  url
+}: {
+  id: string;
+  url: string;
+}): Promise<DeleteProductImage> => {
+  try {
+    const { getUser } = getKindeServerSession()
+    const user = await getUser();
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('You do not have access to this area');
+    }
+
+    const existingImage = await db.image.findUnique({ where: { id } });
+    if (!existingImage || existingImage.url !== url) {
+      throw new Error('Image not found.');
+    }
+
+    const key = getFileKey(url);
+    await utapi.deleteFiles([key]);
+
+    await db.image.delete({ where: { id } });
 
     return { success: true };
   } catch (err) {

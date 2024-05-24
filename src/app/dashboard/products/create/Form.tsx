@@ -28,6 +28,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 
 import { saveProductValidation } from '../_utils/validations';
 import { saveProduct } from '../_utils/actions';
@@ -37,8 +38,8 @@ import { toast } from 'sonner';
 import type { Category, Color, Size } from '@prisma/client';
 
 import { useUploadThing } from '@/lib/uploadthing';
+
 import { ImagePlus, Trash } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 
 const Form = ({
 	categories,
