@@ -23,6 +23,8 @@ import type { Product } from './_utils/types';
 
 import { Ellipsis, Pencil, Trash } from 'lucide-react';
 
+import { formatPrice } from '@/lib/utils';
+
 const inter = Inter({ subsets: ['latin'] });
 
 const Product = ({
@@ -44,7 +46,7 @@ const Product = ({
 			<TableRow>
 				<TableCell className='hidden md:table-cell'>{product.id}</TableCell>
 				<TableCell>{product.title}</TableCell>
-				<TableCell>${product.price}</TableCell>
+				<TableCell>{formatPrice(product.price)}</TableCell>
 				<TableCell className='hidden md:table-cell'>
 					{product.isArchived ? 'True' : 'False'}
 				</TableCell>
