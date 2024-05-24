@@ -95,6 +95,13 @@ export const deleteCategory = async ({
   id: string
 }): Promise<DeleteCategory> => {
   try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('You do not have access to this area');
+    }
+
     const existingCategory = await db.category.findUnique({
       where: { id }
     });
@@ -118,6 +125,13 @@ export const updateCategory = async ({
   name: string;
 }): Promise<UpdateCategory> => {
   try {
+    const { getUser } = getKindeServerSession();
+    const user = await getUser();
+
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('You do not have access to this area');
+    }
+
     const existingCategory = await db.category.findUnique({ where: { id } });
     if (!existingCategory) {
       throw new Error('Category not found.');
