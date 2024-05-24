@@ -44,7 +44,8 @@ const Color = ({
 			<TableRow key={color.id}>
 				<TableCell className='hidden md:table-cell'>{color.id}</TableCell>
 				<TableCell className='capitalize'>{color.name}</TableCell>
-				<TableCell>
+				<TableCell className='flex items-center gap-4'>
+					<div className='w-14 uppercase'>{color.color}</div>
 					<div
 						className='w-5 h-5 rounded-full border border-gray-200'
 						style={{

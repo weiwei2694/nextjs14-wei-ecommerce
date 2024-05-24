@@ -31,7 +31,7 @@ const Table = ({ colors, page }: { colors: GetColors; page: number }) => {
 				toast.success('Color deleted.');
 			}
 		} catch (err) {
-			console.error(`[ERROR_DASHBOARD_DELETE_COLOR]: ${err}`);
+			console.error(`[ERROR_DELETE_COLOR]: ${err}`);
 
 			if (typeof err === 'string') {
 				if (
