@@ -13,3 +13,8 @@ export const formatPrice = (price: number): string => {
 
   return formatter.format(price);
 }
+
+export const getFileKey = (url: string) => {
+  const fileKey = url.substring(url.lastIndexOf('/') + 1);
+  return fileKey;
+};
