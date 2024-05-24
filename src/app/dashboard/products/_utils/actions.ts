@@ -6,7 +6,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
 import { revalidatePath } from 'next/cache';
 
-import type { SaveProduct, GetTotalProduct, GetProducts, DeleteProduct } from './types';
+import type { SaveProduct, GetTotalProduct, GetProducts, DeleteProduct, GetProduct } from './types';
 
 import type { Category, Color, Size } from '@prisma/client';
 
@@ -56,10 +56,15 @@ export const getProduct = async ({
   id
 }: {
   id: string;
-}) => {
+}): Promise<GetProduct> => {
   try {
     const existingProduct = await db.product.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        category: true,
+        size: true,
+        color: true,
+      }
     });
     if (!existingProduct) {
       throw new Error('Product not found.');
@@ -111,6 +116,61 @@ export const saveProduct = async ({
     })
 
     return { data: newProduct, success: true };
+  } catch (err) {
+    throw err;
+  } finally {
+    revalidatePath('/dashboard/products');
+  }
+}
+
+export const updateProduct = async ({
+  id,
+  title,
+  price,
+  description,
+  categoryId,
+  colorId,
+  sizeId,
+  isFeatured,
+  isArchived
+}: {
+  id: string;
+  title: string;
+  price: string;
+  description: string;
+  categoryId: string;
+  colorId: string;
+  sizeId: string;
+  isFeatured: boolean;
+  isArchived: boolean;
+}) => {
+  try {
+    const { getUser } = getKindeServerSession()
+    const user = await getUser();
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('You do not have access to this area');
+    }
+
+    const existingProduct = await db.product.findUnique({ where: { id } });
+    if (!existingProduct) {
+      throw new Error('Product not found.');
+    }
+
+    const newProduct = await db.product.update({
+      where: { id },
+      data: {
+        title,
+        price: Number(price),
+        description,
+        categoryId,
+        colorId,
+        sizeId,
+        isFeatured,
+        isArchived
+      }
+    });
+
+    return { success: true, data: newProduct };
   } catch (err) {
     throw err;
   } finally {

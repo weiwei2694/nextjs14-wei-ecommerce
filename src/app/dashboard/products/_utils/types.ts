@@ -7,6 +7,7 @@ export type Product = ProductPrisma & {
   color: Color,
   size: Size
 }
+
 export type GetProducts = {
   data: Product[];
   hasNext: boolean;
@@ -20,3 +21,5 @@ export type SaveProduct = {
 export type DeleteProduct = {
   success: boolean;
 }
+
+export type GetProduct = Product | undefined;
