@@ -6,7 +6,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
 import { revalidatePath } from 'next/cache';
 
-import type { SaveProduct, GetTotalProduct } from './types';
+import type { SaveProduct, GetTotalProduct, GetProducts, DeleteProduct } from './types';
 
 import type { Category, Color, Size } from '@prisma/client';
 
@@ -16,6 +16,36 @@ export const getTotalProduct = async (): Promise<GetTotalProduct> => {
     return totalProduct;
   } catch (err) {
     console.error(`[ERROR_GET_TOTAL_PRODUCT]: ${err}`);
+  }
+}
+
+export const getProducts = async ({
+  page = 0,
+  per_page = 10
+}: {
+  page?: number;
+  per_page?: number;
+}): Promise<GetProducts> => {
+  try {
+    const skip = per_page * page;
+
+    const whereFilter = {
+      include: {
+        category: true,
+        size: true,
+        color: true,
+      },
+      skip,
+      take: per_page
+    }
+
+    const products = await db.product.findMany(whereFilter);
+    const totalCount = await db.product.count();
+    const hasNext = Boolean(totalCount - skip - products.length);
+
+    return { data: products, hasNext };
+  } catch (err) {
+    console.error(`[ERROR_GET_PRODUCTS]: ${err}`);
   }
 }
 
@@ -59,6 +89,33 @@ export const saveProduct = async ({
     })
 
     return { data: newProduct, success: true };
+  } catch (err) {
+    throw err;
+  } finally {
+    revalidatePath('/dashboard/products');
+  }
+}
+
+export const deleteProduct = async ({
+  id
+}: {
+  id: string;
+}): Promise<DeleteProduct> => {
+  try {
+    const { getUser } = getKindeServerSession()
+    const user = await getUser();
+    if (!user || user.email !== process.env.ADMIN_EMAIL) {
+      throw new Error('You do not have access to this area');
+    }
+
+    const existingProduct = await db.product.findUnique({
+      where: { id }
+    });
+    if (!existingProduct) {
+      throw new Error('Product not found.');
+    }
+
+    return { success: true };
   } catch (err) {
     throw err;
   } finally {
