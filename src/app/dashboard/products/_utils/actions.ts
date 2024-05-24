@@ -6,9 +6,18 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
 import { revalidatePath } from 'next/cache';
 
-import type { SaveProduct } from './types';
+import type { SaveProduct, GetTotalProduct } from './types';
 
 import type { Category, Color, Size } from '@prisma/client';
+
+export const getTotalProduct = async (): Promise<GetTotalProduct> => {
+  try {
+    const totalProduct = await db.product.count({});
+    return totalProduct;
+  } catch (err) {
+    console.error(`[ERROR_GET_TOTAL_PRODUCT]: ${err}`);
+  }
+}
 
 export const saveProduct = async ({
   title,
