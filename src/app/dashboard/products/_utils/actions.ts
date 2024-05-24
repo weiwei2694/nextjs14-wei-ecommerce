@@ -10,6 +10,9 @@ import type { SaveProduct, GetTotalProduct, GetProducts, DeleteProduct } from '.
 
 import type { Category, Color, Size } from '@prisma/client';
 
+import { getFileKey } from '@/lib/utils';
+import { utapi } from '@/lib/utapi';
+
 export const getTotalProduct = async (): Promise<GetTotalProduct> => {
   try {
     const totalProduct = await db.product.count({});
@@ -114,6 +117,18 @@ export const deleteProduct = async ({
     if (!existingProduct) {
       throw new Error('Product not found.');
     }
+
+    const imagesDb = await db.image.findMany({
+      where: {
+        productId: existingProduct.id
+      }
+    });
+    const images = imagesDb.map(img => img.url && getFileKey(img.url));
+    await utapi.deleteFiles(images);
+
+    await db.product.delete({
+      where: { id }
+    });
 
     return { success: true };
   } catch (err) {
