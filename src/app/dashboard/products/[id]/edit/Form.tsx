@@ -2,12 +2,13 @@
 
 import React, { useState, useRef, useTransition } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
+import { Inter } from 'next/font/google';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { ImagePlus, LoaderCircle, Trash } from 'lucide-react';
+import { ImagePlus, Info, LoaderCircle, Trash } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -31,6 +32,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogHeader,
+	DialogTitle,
+	DialogTrigger,
+} from '@/components/ui/dialog';
 
 import { updateProductValidation } from '../../_utils/validations';
 import { deleteProductImage, updateProduct } from '../../_utils/actions';
@@ -43,6 +52,8 @@ import { useUploadThing } from '@/lib/uploadthing';
 import type { Category, Color, Image, Size } from '@prisma/client';
 
 import useTotalSizeMb from '@/hooks/useTotalSizeMb';
+
+const inter = Inter({ subsets: ['latin'] });
 
 const Form = ({
 	product: currentProduct,
@@ -275,7 +286,7 @@ const Form = ({
 	return (
 		<>
 			<div className='flex flex-col space-y-3'>
-				<div className='flex justify-between items-center'>
+				<div className='flex flex-wrap justify-between sm:items-center gap-2.5'>
 					<Label
 						htmlFor='images'
 						className='w-fit'
@@ -284,18 +295,60 @@ const Form = ({
 						<Badge className='ml-1.5'>PNG, JPG, JPEG, WEBP - MAX 4MB</Badge>
 					</Label>
 
-					<Button
-						size='sm'
-						disabled={true}
-						className='pointer-events-none'
-					>
-						{isLoad ? (
-							<>{totalSizeMb.toFixed(2)}MB</>
-						) : (
-							<LoaderCircle className='w-4 h-4 animate-spin mr-1.5' />
-						)}{' '}
-						/ {MAX_FILE_SIZE_MB.toFixed(2)}MB
-					</Button>
+					<div className='flex gap-2.5'>
+						<Button
+							size='sm'
+							disabled={true}
+							className='pointer-events-none'
+						>
+							{isLoad ? (
+								<>{totalSizeMb.toFixed(2)}MB</>
+							) : (
+								<LoaderCircle className='w-4 h-4 animate-spin mr-1.5' />
+							)}{' '}
+							/ {MAX_FILE_SIZE_MB.toFixed(2)}MB
+						</Button>
+
+						<Dialog>
+							<DialogTrigger asChild>
+								<Button
+									size='sm'
+									variant='secondary'
+								>
+									<Info className='w-5 h-5 text-zinc-500' />
+								</Button>
+							</DialogTrigger>
+							<DialogContent className={inter.className}>
+								<DialogHeader className='text-start'>
+									<div className='flex flex-col space-y-4'>
+										<div className='flex flex-col space-y-1'>
+											<DialogTitle>News Flash</DialogTitle>
+											<DialogDescription>
+												please read this, if you want to know important
+												information
+											</DialogDescription>
+										</div>
+										<div className='ps-4'>
+											<ul className='list-disc text-sm space-y-1'>
+												<li>
+													Images that you have deleted are automatically
+													permanently deleted from the server
+												</li>
+												<li>
+													The image you just added will not be uploaded to the
+													server if you do not press the update button
+												</li>
+												<li>
+													If you delete all the images, the product will
+													automatically be archived
+												</li>
+											</ul>
+										</div>
+									</div>
+								</DialogHeader>
+							</DialogContent>
+						</Dialog>
+					</div>
 				</div>
 
 				{images.length || (previews?.length && files?.length) ? (
