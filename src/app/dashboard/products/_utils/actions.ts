@@ -140,7 +140,9 @@ export const updateProduct = async ({
   isFeatured,
   isArchived,
 
-  onlyUpdateImages
+  onlyUpdateImages,
+
+  path
 }: {
   id?: string;
   title?: string;
@@ -153,6 +155,8 @@ export const updateProduct = async ({
   isArchived?: boolean;
 
   onlyUpdateImages?: boolean;
+
+  path?: string;
 }): Promise<UpdateProduct> => {
   try {
     const { getUser } = getKindeServerSession()
@@ -190,7 +194,7 @@ export const updateProduct = async ({
   } catch (err) {
     throw err;
   } finally {
-    revalidatePath('/dashboard/products');
+    revalidatePath(path || '/dashboard/products');
   }
 }
 

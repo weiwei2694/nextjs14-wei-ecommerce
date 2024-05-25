@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -56,6 +56,7 @@ const Form = ({
 	colors: Color[];
 }) => {
 	const router = useRouter();
+	const pathname = usePathname();
 
 	// combines existing photo sizes and previews
 	const { res: DEFAULT_TOTAL_SIZE_MB, isLoad } = useTotalSizeMb(
@@ -230,6 +231,12 @@ const Form = ({
 				return;
 			}
 
+			if (files?.length && previews?.length) {
+				await startUpload(files, {
+					productId: currentProduct.id,
+				});
+			}
+
 			const { success, data } = await updateProduct({
 				id,
 				title,
@@ -243,12 +250,6 @@ const Form = ({
 			});
 
 			if (success && data) {
-				if (files?.length && previews?.length) {
-					await startUpload(files, {
-						productId: currentProduct.id,
-					});
-				}
-
 				resetFormState();
 				toast.success('Product updated.');
 				router.push('/dashboard/products?page=1');
@@ -344,14 +345,35 @@ const Form = ({
 												variant='destructive'
 												disabled={isPending || isLoading}
 												onClick={() => {
-													startTransition(() => {
-														const promise = handleDeleteImage(image);
+													if (images.length === 1) {
+														form.setValue('isArchived', true);
+													}
 
-														toast.promise(promise, {
+													startTransition(() => {
+														if (images.length === 1) {
+															updateProduct({
+																id: currentProduct.id,
+																title: currentProduct.title,
+																price: String(currentProduct.price),
+																description: currentProduct.description,
+																categoryId: currentProduct.categoryId,
+																sizeId: currentProduct.sizeId,
+																colorId: currentProduct.colorId,
+																isFeatured: currentProduct.isFeatured,
+																isArchived: true,
+																path: pathname,
+															});
+														}
+
+														const promise = handleDeleteImage(image);
+														const msg = {
 															loading: 'Deleting image...',
-															success: 'Image deleted',
-															error: 'Failed to delete image',
-														});
+															success: 'Image deleted.',
+															error:
+																'Something went wrong. Please try again later.',
+														};
+
+														toast.promise(promise, msg);
 													});
 												}}
 											>
