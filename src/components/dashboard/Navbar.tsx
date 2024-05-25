@@ -23,27 +23,33 @@ import { buttonVariants } from '@/components/ui/button';
 const lists = [
 	{
 		name: 'Overview',
+		path: '/dashboard',
 		href: '/dashboard',
 	},
 	{
 		name: 'Orders',
-		href: '/dashboard/orders',
+		path: '/dashboard/orders',
+		href: '/dashboard/orders?page=1',
 	},
 	{
 		name: 'Products',
-		href: '/dashboard/products',
+		path: '/dashboard/products',
+		href: '/dashboard/products?page=1',
 	},
 	{
 		name: 'Colors',
-		href: '/dashboard/colors',
+		path: '/dashboard/colors',
+		href: '/dashboard/colors?page=1',
 	},
 	{
 		name: 'Sizes',
-		href: '/dashboard/sizes',
+		path: '/dashboard/sizes',
+		href: '/dashboard/sizes?page=1',
 	},
 	{
 		name: 'Categories',
-		href: '/dashboard/categories',
+		path: '/dashboard/categories',
+		href: '/dashboard/categories?page=1',
 	},
 ];
 
@@ -68,21 +74,29 @@ const NavListMobile = ({ pathname }: { pathname: string }) => {
 				>
 					<SheetHeader>
 						<ul className='flex flex-col items-start space-y-4'>
-							{lists.map((list) => (
-								<li key={list.name}>
-									<Link
-										href={list.href}
-										className={cn(
-											'text-zinc-900 tracking-tight text-sm ',
-											pathname.startsWith(list.href)
-												? 'font-semibold'
-												: 'font-normal'
-										)}
-									>
-										{list.name}
-									</Link>
-								</li>
-							))}
+							{lists.map((list) => {
+								const isOverview = list.name === 'Overview';
+								const isActive =
+									pathname.startsWith(list.path) ||
+									(isOverview && pathname === '/dashboard');
+
+								return (
+									<li key={list.name}>
+										<Link
+											href={list.href}
+											className={cn(
+												'text-zinc-900 tracking-tight text-sm',
+												isActive ? 'font-semibold' : 'font-normal',
+												isOverview && pathname !== '/dashboard'
+													? 'font-normal'
+													: ''
+											)}
+										>
+											{list.name}
+										</Link>
+									</li>
+								);
+							})}
 						</ul>
 					</SheetHeader>
 					<SheetFooter className='!mt-0 !pt-0'>
@@ -113,21 +127,27 @@ const Navbar = () => {
 				<Logo />
 
 				<ul className='hidden lg:flex items-center space-x-8'>
-					{lists.map((list) => (
-						<li key={list.name}>
-							<Link
-								href={list.href}
-								className={cn(
-									'text-zinc-900 tracking-tight text-sm',
-									pathname.startsWith(list.href)
-										? 'font-semibold'
-										: 'font-normal'
-								)}
-							>
-								{list.name}
-							</Link>
-						</li>
-					))}
+					{lists.map((list) => {
+						const isOverview = list.name === 'Overview';
+						const isActive =
+							pathname.startsWith(list.path) ||
+							(isOverview && pathname === '/dashboard');
+
+						return (
+							<li key={list.name}>
+								<Link
+									href={list.href}
+									className={cn(
+										'text-zinc-900 tracking-tight text-sm',
+										isActive ? 'font-semibold' : 'font-normal',
+										isOverview && pathname !== '/dashboard' ? 'font-normal' : ''
+									)}
+								>
+									{list.name}
+								</Link>
+							</li>
+						);
+					})}
 				</ul>
 			</div>
 

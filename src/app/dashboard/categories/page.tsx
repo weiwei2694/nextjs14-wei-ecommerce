@@ -25,7 +25,7 @@ const Page = async ({
 	return (
 		<BodySection>
 			<HeadSection
-				title={`Categories(${totalCategory})`}
+				title={`Categories(${totalCategory || 0})`}
 				subtitle='Manage categories for your product'
 				isNewButtonVisible
 				newButtonPath='/dashboard/categories/create'
