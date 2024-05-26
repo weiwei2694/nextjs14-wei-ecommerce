@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Inter } from 'next/font/google';
 
-import { ArrowRightIcon, Menu } from 'lucide-react';
+import { ArrowRight, ArrowRightIcon, Menu } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -20,68 +20,32 @@ import {
 	SheetHeader,
 	SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import Logo from '@/components/Logo';
 import NavbarParent from '@/components/NavbarParent';
 import Cart from '@/components/home/Cart';
-import Logo from '@/components/Logo';
+
 import Barrier from '../Barrier';
+
+import { Category } from '@prisma/client';
 
 const inter = Inter({
 	subsets: ['latin'],
 });
 
-// TEMPORARY
-const lists = [
-	{
-		name: 'Suits',
-		href: '/suits',
-	},
-	{
-		name: 'Shirts',
-		href: '/shirts',
-	},
-	{
-		name: 'Glasses',
-		href: '/',
-	},
-];
-
-const LogoutAndLogin = ({ user }: { user: KindeUser | null }) => {
-	return (
-		<div
-			aria-hidden='true'
-			className='hidden lg:block'
-		>
-			{!user ? (
-				<LoginLink
-					className={buttonVariants({
-						size: 'sm',
-						variant: 'ghost',
-					})}
-					postLoginRedirectURL='/'
-				>
-					Sign In <ArrowRightIcon className='ml-1.5 h-5 w-5' />
-				</LoginLink>
-			) : (
-				<LogoutLink
-					className={buttonVariants({
-						size: 'sm',
-						variant: 'ghost',
-					})}
-				>
-					Log Out
-					<ArrowRightIcon className='ml-1.5 h-5 w-5' />
-				</LogoutLink>
-			)}
-		</div>
-	);
-};
-
 const NavListMobile = ({
 	pathname,
-	isAdmin,
+	user,
+	lists,
 }: {
 	pathname: string;
-	isAdmin: boolean;
+	user: KindeUser | null;
+	lists: Category[];
 }) => {
 	return (
 		<div
@@ -103,28 +67,15 @@ const NavListMobile = ({
 				>
 					<SheetHeader>
 						<ul className='flex flex-col items-start space-y-4'>
-							{isAdmin ? (
-								<li>
+							{lists.map((list) => (
+								<li key={list.id}>
 									<Link
-										href='/dashboard'
+										href={`/${list.id}`}
 										className={cn(
-											'text-zinc-900 tracking-tight text-sm',
-											pathname === '/dashboard'
+											'text-zinc-900 tracking-tight text-sm capitalize',
+											pathname === `/${list.id}`
 												? 'font-semibold'
 												: 'font-normal'
-										)}
-									>
-										Dashboard
-									</Link>
-								</li>
-							) : null}
-							{lists.map((list) => (
-								<li key={list.name}>
-									<Link
-										href={list.href}
-										className={cn(
-											'text-zinc-900 tracking-tight text-sm ',
-											pathname === list.href ? 'font-semibold' : 'font-normal'
 										)}
 									>
 										{list.name}
@@ -133,18 +84,20 @@ const NavListMobile = ({
 							))}
 						</ul>
 					</SheetHeader>
-					<SheetFooter className='!mt-0 !pt-0'>
-						<LogoutLink
-							className={buttonVariants({
-								size: 'default',
-								variant: 'default',
-								className: 'w-full',
-							})}
-						>
-							Log Out
-							<ArrowRightIcon className='ml-1.5 h-5 w-5' />
-						</LogoutLink>
-					</SheetFooter>
+					{user ? null : (
+						<SheetFooter className='!mt-0 !pt-0'>
+							<LoginLink
+								className={buttonVariants({
+									size: 'default',
+									variant: 'default',
+									className: 'w-full',
+								})}
+							>
+								Log in
+								<ArrowRightIcon className='ml-1.5 h-5 w-5' />
+							</LoginLink>
+						</SheetFooter>
+					)}
 				</SheetContent>
 			</Sheet>
 		</div>
@@ -154,9 +107,13 @@ const NavListMobile = ({
 const Navbar = ({
 	user,
 	isAdmin,
+	lists,
+	userIcon,
 }: {
 	user: KindeUser | null;
 	isAdmin: boolean;
+	lists: Category[];
+	userIcon?: string | null;
 }) => {
 	const pathname = usePathname();
 
@@ -166,26 +123,13 @@ const Navbar = ({
 				<Logo />
 
 				<ul className='hidden lg:flex items-center space-x-8'>
-					{isAdmin ? (
-						<li>
-							<Link
-								href='/dashboard'
-								className={cn(
-									'text-zinc-900 tracking-tight text-sm',
-									pathname === '/dashboard' ? 'font-semibold' : 'font-normal'
-								)}
-							>
-								Dashboard
-							</Link>
-						</li>
-					) : null}
 					{lists.map((list) => (
-						<li key={list.name}>
+						<li key={list.id}>
 							<Link
-								href={list.href}
+								href={`/${list.id}`}
 								className={cn(
-									'text-zinc-900 tracking-tight text-sm',
-									pathname === list.href ? 'font-semibold' : 'font-normal'
+									'text-zinc-900 tracking-tight text-sm capitalize',
+									pathname === `/${list.id}` ? 'font-semibold' : 'font-normal'
 								)}
 							>
 								{list.name}
@@ -196,12 +140,48 @@ const Navbar = ({
 			</div>
 			<div className='flex items-center space-x-4'>
 				<Cart />
-				<Barrier />
-				<LogoutAndLogin user={user} />
 				<NavListMobile
-					isAdmin={isAdmin}
+					user={user}
+					lists={lists}
 					pathname={pathname}
 				/>
+				<Barrier />
+				{user ? (
+					<DropdownMenu>
+						<DropdownMenuTrigger>
+							<img
+								src={userIcon || '/preview.webp'}
+								alt='user icon'
+								className='w-9 h-9 rounded-full hover:ring-4 ring-gray-200 transition-all'
+							/>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent
+							side='bottom'
+							sideOffset={10}
+							className={cn(inter.className, 'me-6 2xl:me-0')}
+						>
+							{isAdmin ? (
+								<DropdownMenuItem>
+									<Link href='/dashboard'>Dashboard</Link>
+								</DropdownMenuItem>
+							) : null}
+							<DropdownMenuItem>
+								<LogoutLink>Log out</LogoutLink>
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+				) : (
+					<LoginLink
+						className={buttonVariants({
+							size: 'sm',
+							variant: 'ghost',
+							className: 'hidden lg:inline-flex',
+						})}
+					>
+						Log in
+						<ArrowRight className='w-4 h-4 ml-1.5' />
+					</LoginLink>
+				)}
 			</div>
 		</NavbarParent>
 	);
