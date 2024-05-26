@@ -101,7 +101,6 @@ const Form = ({
 	const defaultValues = {
 		title: '',
 		price: '',
-		description: '',
 		categoryId: '',
 		colorId: '',
 		sizeId: '',
@@ -118,7 +117,6 @@ const Form = ({
 		const {
 			title,
 			price,
-			description,
 			categoryId,
 			colorId,
 			sizeId,
@@ -136,7 +134,6 @@ const Form = ({
 			const { data, success } = await saveProduct({
 				title,
 				price,
-				description,
 				categoryId,
 				colorId,
 				sizeId,
@@ -410,22 +407,6 @@ const Form = ({
 											This product will not appear anywhere in the store.
 										</FormDescription>
 									</div>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name='description'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Description</FormLabel>
-									<FormControl>
-										<Textarea
-											placeholder='Description'
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
 								</FormItem>
 							)}
 						/>

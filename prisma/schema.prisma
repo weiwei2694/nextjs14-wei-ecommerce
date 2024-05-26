@@ -17,12 +17,11 @@ model User {
 }
 
 model Product {
-  id          String  @id @default(uuid())
-  title       String  @db.VarChar(200)
-  price       Float
-  description String  @db.Text
-  isFeatured  Boolean @default(false)
-  isArchived  Boolean @default(false)
+  id         String  @id @default(uuid())
+  title      String  @db.VarChar(200)
+  price      Float
+  isFeatured Boolean @default(false)
+  isArchived Boolean @default(false)
 
   images     Image[]
   orderItems OrderItem[]

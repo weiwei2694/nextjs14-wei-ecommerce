@@ -163,7 +163,6 @@ const Form = ({
 	const emptyDefaultValues = {
 		title: '',
 		price: '',
-		description: '',
 		categoryId: '',
 		colorId: '',
 		sizeId: '',
@@ -174,7 +173,6 @@ const Form = ({
 		id: currentProduct.id,
 		title: currentProduct.title,
 		price: String(currentProduct.price),
-		description: currentProduct.description,
 		categoryId: currentProduct.categoryId,
 		colorId: currentProduct.colorId,
 		sizeId: currentProduct.sizeId,
@@ -200,7 +198,6 @@ const Form = ({
 			id,
 			title,
 			price,
-			description,
 			categoryId,
 			colorId,
 			sizeId,
@@ -217,7 +214,6 @@ const Form = ({
 		const isProductDataSame =
 			currentProduct.title === title &&
 			currentProduct.price === Number(price) &&
-			currentProduct.description === description &&
 			currentProduct.categoryId === categoryId &&
 			currentProduct.colorId === colorId &&
 			currentProduct.sizeId === sizeId &&
@@ -252,7 +248,6 @@ const Form = ({
 				id,
 				title,
 				price,
-				description,
 				categoryId,
 				colorId,
 				sizeId,
@@ -408,7 +403,6 @@ const Form = ({
 																id: currentProduct.id,
 																title: currentProduct.title,
 																price: String(currentProduct.price),
-																description: currentProduct.description,
 																categoryId: currentProduct.categoryId,
 																sizeId: currentProduct.sizeId,
 																colorId: currentProduct.colorId,
@@ -638,22 +632,6 @@ const Form = ({
 											This product will not appear anywhere in the store.
 										</FormDescription>
 									</div>
-								</FormItem>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name='description'
-							render={({ field }) => (
-								<FormItem>
-									<FormLabel>Description</FormLabel>
-									<FormControl>
-										<Textarea
-											placeholder='Description'
-											{...field}
-										/>
-									</FormControl>
-									<FormMessage />
 								</FormItem>
 							)}
 						/>

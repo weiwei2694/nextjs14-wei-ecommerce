@@ -3,7 +3,6 @@ import { z } from 'zod';
 export const saveProductValidation = z.object({
   title: z.string().min(1, { message: 'Title is required' }).max(100),
   price: z.string().min(1, { message: 'Price is required' }),
-  description: z.string().min(1, { message: 'Description is required' }),
   categoryId: z.string().uuid({ message: 'Category is required' }),
   colorId: z.string().uuid({ message: 'Color is required' }),
   sizeId: z.string().uuid({ message: 'Size is required' }),
@@ -21,7 +20,6 @@ export const updateProductValidation = z.object({
   id: z.string().uuid({ message: 'Invalid ID.' }),
   title: z.string().min(1, { message: 'Title is required' }).max(100),
   price: z.string().min(1, { message: 'Price is required' }),
-  description: z.string().min(1, { message: 'Description is required' }),
   categoryId: z.string().uuid({ message: 'Category is required' }),
   colorId: z.string().uuid({ message: 'Color is required' }),
   sizeId: z.string().uuid({ message: 'Size is required' }),

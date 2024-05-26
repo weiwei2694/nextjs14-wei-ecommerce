@@ -85,7 +85,6 @@ export const getProduct = async ({
 export const saveProduct = async ({
   title,
   price,
-  description,
   categoryId,
   colorId,
   sizeId,
@@ -94,7 +93,6 @@ export const saveProduct = async ({
 }: {
   title: string;
   price: string;
-  description: string;
   categoryId: string;
   colorId: string;
   sizeId: string;
@@ -112,7 +110,6 @@ export const saveProduct = async ({
       data: {
         title,
         price: Number(price),
-        description,
         categoryId,
         colorId,
         sizeId,
@@ -133,7 +130,6 @@ export const updateProduct = async ({
   id,
   title,
   price,
-  description,
   categoryId,
   colorId,
   sizeId,
@@ -147,7 +143,6 @@ export const updateProduct = async ({
   id?: string;
   title?: string;
   price?: string;
-  description?: string;
   categoryId?: string;
   colorId?: string;
   sizeId?: string;
@@ -181,7 +176,6 @@ export const updateProduct = async ({
       data: {
         title,
         price: Number(price),
-        description,
         categoryId,
         colorId,
         sizeId,
