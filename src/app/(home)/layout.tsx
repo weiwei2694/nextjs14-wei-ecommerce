@@ -5,6 +5,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 import Navbar from '@/components/home/Navbar';
 
 import { db } from '@/db';
+import Footer from '@/components/home/Footer';
 
 export const metadata: Metadata = {
 	title: 'Create Next App',
@@ -30,7 +31,8 @@ const Layout = async ({
 				lists={lists}
 				userIcon={user?.picture}
 			/>
-			<main className='min-h-screen'>{children}</main>
+			<main>{children}</main>
+			<Footer />
 		</>
 	);
 };
