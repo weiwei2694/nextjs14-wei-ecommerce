@@ -1,14 +1,9 @@
 import React from 'react';
-import { Inter } from 'next/font/google';
 import Image from 'next/image';
-
-import { cn } from '@/lib/utils';
-
-const inter = Inter({ subsets: ['latin'] });
 
 const Billboard = ({ img, title }: { img: string; title: string }) => {
 	return (
-		<div className={cn(inter.className, 'mb-8 sm:mb-10 mt-8 sm:mt-10')}>
+		<div className='mb-8 sm:mb-10 mt-8 sm:mt-10'>
 			<div className='relative'>
 				<Image
 					src={img}
@@ -20,7 +15,7 @@ const Billboard = ({ img, title }: { img: string; title: string }) => {
 				/>
 
 				<div className='absolute inset-0 grid place-items-center'>
-					<h1 className='capitalize select-none text-3xl md:text-4xl font-bold text-center px-8'>
+					<h1 className='select-none text-4xl md:text-5xl lg:text-6xl font-extrabold text-center px-8 max-w-3xl text-zinc-900'>
 						{title}
 					</h1>
 				</div>

@@ -18,7 +18,7 @@ const Page = async ({ params }: { params: { categoryId: string } }) => {
 	return (
 		<div className='max-w-7xl mx-auto px-6 2xl:px-0'>
 			<Billboard
-				title={category.name}
+				title={category.title}
 				img={category.billboard}
 			/>
 		</div>

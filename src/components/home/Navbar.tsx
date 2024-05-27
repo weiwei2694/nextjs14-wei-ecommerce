@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Inter } from 'next/font/google';
+import { Urbanist } from 'next/font/google';
 
 import { ArrowRight, ArrowRightIcon, Menu } from 'lucide-react';
 
@@ -34,9 +34,7 @@ import Barrier from '../Barrier';
 
 import { Category } from '@prisma/client';
 
-const inter = Inter({
-	subsets: ['latin'],
-});
+const urbanist = Urbanist({ subsets: ['latin'] });
 
 const NavListMobile = ({
 	pathname,
@@ -63,7 +61,7 @@ const NavListMobile = ({
 				</SheetTrigger>
 				<SheetContent
 					side='top'
-					className={cn(inter.className, 'flex flex-col space-y-4')}
+					className={cn(urbanist.className, 'flex flex-col space-y-4')}
 				>
 					<SheetHeader>
 						<ul className='flex flex-col items-start space-y-4'>
@@ -158,15 +156,22 @@ const Navbar = ({
 						<DropdownMenuContent
 							side='bottom'
 							sideOffset={10}
-							className={cn(inter.className, 'me-6 2xl:me-0')}
+							className={cn(urbanist.className, 'me-6 2xl:me-0')}
 						>
 							{isAdmin ? (
 								<DropdownMenuItem>
-									<Link href='/dashboard'>Dashboard</Link>
+									<Link
+										href='/dashboard'
+										className='text-zinc-900 tracking-wide'
+									>
+										Dashboard
+									</Link>
 								</DropdownMenuItem>
 							) : null}
 							<DropdownMenuItem>
-								<LogoutLink>Log out</LogoutLink>
+								<LogoutLink className='text-zinc-900 tracking-wide'>
+									Log out
+								</LogoutLink>
 							</DropdownMenuItem>
 						</DropdownMenuContent>
 					</DropdownMenu>
