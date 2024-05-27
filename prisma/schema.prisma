@@ -73,8 +73,9 @@ model Image {
 }
 
 model Category {
-  id   String @id @default(uuid())
-  name String @unique @db.VarChar(100)
+  id        String @id @default(uuid())
+  name      String @unique @db.VarChar(100)
+  billboard String @db.Text
 
   products Product[]
 

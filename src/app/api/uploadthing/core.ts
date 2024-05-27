@@ -14,6 +14,10 @@ export const ourFileRouter = {
       await db.image.create({ data: { productId, url: file.url } });
       return { success: true };
     }),
+  imageOne: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
+    .onUploadComplete(({ file }) => {
+      return { url: file.url };
+    })
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

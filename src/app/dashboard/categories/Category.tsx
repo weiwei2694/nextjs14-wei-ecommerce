@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Inter } from 'next/font/google';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 import { TableCell, TableRow } from '@/components/ui/table';
 import {
@@ -44,6 +45,15 @@ const Category = ({
 			<TableRow>
 				<TableCell className='hidden md:table-cell'>{category.id}</TableCell>
 				<TableCell className='capitalize'>{category.name}</TableCell>
+				<TableCell>
+					<Link
+						href={category.billboard}
+						className='text-blue-600 hover:underline'
+						target='_blank'
+					>
+						{category.billboard}
+					</Link>
+				</TableCell>
 				<TableCell className='hidden md:table-cell'>
 					{category.createdAt.toLocaleDateString()}
 				</TableCell>

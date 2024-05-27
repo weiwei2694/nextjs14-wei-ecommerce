@@ -63,9 +63,11 @@ export const getCategory = async ({
 }
 
 export const saveCategory = async ({
-  name
+  name,
+  url
 }: {
   name: string;
+  url: string;
 }): Promise<SaveCategory> => {
   try {
     const { getUser } = getKindeServerSession();
@@ -77,7 +79,8 @@ export const saveCategory = async ({
 
     await db.category.create({
       data: {
-        name: name.toLowerCase()
+        name: name.toLowerCase(),
+        billboard: url
       },
     });
 

@@ -59,6 +59,7 @@ const Table = ({
 					<TableRow>
 						<TableHead className='hidden md:table-cell'>Id</TableHead>
 						<TableHead>Name</TableHead>
+						<TableHead>Billboard</TableHead>
 						<TableHead className='hidden md:table-cell'>Date</TableHead>
 						<TableHead>Action</TableHead>
 					</TableRow>
