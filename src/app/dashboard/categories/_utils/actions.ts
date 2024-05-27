@@ -8,6 +8,9 @@ import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 import { revalidatePath } from "next/cache";
 
+import { utapi } from "@/lib/utapi";
+import { getFileKey } from "@/lib/utils";
+
 export const getTotalCategory = async (): Promise<GetTotalCategory> => {
   try {
     const totalCategory = await db.category.count();
@@ -122,10 +125,12 @@ export const deleteCategory = async ({
 
 export const updateCategory = async ({
   id,
-  name
+  name,
+  url
 }: {
   id: string;
   name: string;
+  url: string;
 }): Promise<UpdateCategory> => {
   try {
     const { getUser } = getKindeServerSession();
@@ -140,9 +145,17 @@ export const updateCategory = async ({
       throw new Error('Category not found.');
     }
 
+    if (url !== existingCategory.billboard) {
+      const key = getFileKey(existingCategory.billboard);
+      utapi.deleteFiles(key);
+    }
+
     const newCategory = await db.category.update({
       where: { id },
-      data: { name: name.toLowerCase() }
+      data: {
+        name: name.toLowerCase(),
+        billboard: url
+      },
     });
 
     return { success: true, data: newCategory };
