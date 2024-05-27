@@ -67,10 +67,12 @@ export const getCategory = async ({
 
 export const saveCategory = async ({
   name,
-  url
+  url,
+  title
 }: {
   name: string;
   url: string;
+  title: string;
 }): Promise<SaveCategory> => {
   try {
     const { getUser } = getKindeServerSession();
@@ -83,7 +85,8 @@ export const saveCategory = async ({
     await db.category.create({
       data: {
         name: name.toLowerCase(),
-        billboard: url
+        billboard: url,
+        title
       },
     });
 
@@ -126,11 +129,13 @@ export const deleteCategory = async ({
 export const updateCategory = async ({
   id,
   name,
-  url
+  url,
+  title
 }: {
   id: string;
   name: string;
   url: string;
+  title: string;
 }): Promise<UpdateCategory> => {
   try {
     const { getUser } = getKindeServerSession();
@@ -154,7 +159,8 @@ export const updateCategory = async ({
       where: { id },
       data: {
         name: name.toLowerCase(),
-        billboard: url
+        billboard: url,
+        title
       },
     });
 

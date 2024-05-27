@@ -53,9 +53,22 @@ const Form = ({ category: currentCategory }: { category: Category }) => {
 		}
 	};
 
+	const emptyDefaultValues = {
+		id: '',
+		name: '',
+		title: '',
+	};
 	const defaultValues = {
 		id: currentCategory.id,
 		name: currentCategory.name,
+		title: currentCategory.title,
+	};
+
+	const resetForm = () => {
+		form.reset(emptyDefaultValues);
+		setFile(null);
+		setPreview(null);
+		setShowCurrentImage(false);
 	};
 
 	const form = useForm<z.infer<typeof updateCategoryValidation>>({
@@ -64,7 +77,7 @@ const Form = ({ category: currentCategory }: { category: Category }) => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof updateCategoryValidation>) => {
-		const { name } = values;
+		const { name, title } = values;
 
 		if (!showCurrentImage && !file && !preview) {
 			toast.error('Please select an image.');
@@ -73,7 +86,13 @@ const Form = ({ category: currentCategory }: { category: Category }) => {
 		}
 
 		// There is nothing that needs to be updated, if the data is still the same
-		if (name === currentCategory.name && showCurrentImage) {
+		if (
+			name === currentCategory.name &&
+			title === currentCategory.title &&
+			showCurrentImage
+		) {
+			resetForm();
+
 			toast.success('Category updated.');
 			router.push('/dashboard/categories?page=1');
 
@@ -91,12 +110,11 @@ const Form = ({ category: currentCategory }: { category: Category }) => {
 				id: currentCategory.id,
 				name,
 				url,
+				title,
 			});
 
 			if (success && data) {
-				form.reset({
-					name: data.name,
-				});
+				resetForm();
 
 				toast.success('Category updated.');
 				router.push('/dashboard/categories?page=1');
@@ -212,6 +230,22 @@ const Form = ({ category: currentCategory }: { category: Category }) => {
 									<FormControl>
 										<Input
 											placeholder='Name'
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='title'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Title</FormLabel>
+									<FormControl>
+										<Input
+											placeholder='Title'
 											{...field}
 										/>
 									</FormControl>

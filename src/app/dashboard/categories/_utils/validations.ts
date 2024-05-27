@@ -10,6 +10,13 @@ export const saveCategoryValidation = z.object({
     .max(100, {
       message: 'Name must be less than 100 characters.',
     }),
+  title: z.string()
+    .min(1, {
+      message: 'Title is required.'
+    })
+    .max(50, {
+      message: 'Title mus be less than 50 characters.'
+    })
 }).refine(async ({ name }) => {
   const existingName = await isNameExist(name);
   return !Boolean(existingName);
@@ -28,6 +35,13 @@ export const updateCategoryValidation = z.object({
     .max(100, {
       message: 'Name must be less than 100 characters.',
     }),
+  title: z.string()
+    .min(1, {
+      message: 'Title is required.'
+    })
+    .max(50, {
+      message: 'Title mus be less than 50 characters.'
+    })
 }).refine(async ({ id, name }) => {
   const existingCategory = await getCategory({ id });
   if (existingCategory!.name === name) return true;

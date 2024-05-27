@@ -52,6 +52,7 @@ const Form = () => {
 
 	const defaultValues = {
 		name: '',
+		title: '',
 	};
 
 	const form = useForm<z.infer<typeof saveCategoryValidation>>({
@@ -60,7 +61,7 @@ const Form = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof saveCategoryValidation>) => {
-		const { name } = values;
+		const { name, title } = values;
 
 		if (!file) {
 			toast.error('Please select an image.');
@@ -72,10 +73,12 @@ const Form = () => {
 			const res = await startUpload([file]);
 			const url = res?.[0].url as string;
 
-			const { success } = await saveCategory({ name, url });
+			const { success } = await saveCategory({ name, title, url });
 
 			if (success) {
 				form.reset(defaultValues);
+				setFile(null);
+				setPreview(null);
 
 				toast.success('Category created.');
 				router.push('/dashboard/categories');
@@ -168,6 +171,22 @@ const Form = () => {
 									<FormControl>
 										<Input
 											placeholder='Name'
+											{...field}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name='title'
+							render={({ field }) => (
+								<FormItem>
+									<FormLabel>Title</FormLabel>
+									<FormControl>
+										<Input
+											placeholder='Title'
 											{...field}
 										/>
 									</FormControl>

@@ -76,6 +76,7 @@ model Category {
   id        String @id @default(uuid())
   name      String @unique @db.VarChar(100)
   billboard String @db.Text
+  title     String @db.VarChar(50)
 
   products Product[]
 
