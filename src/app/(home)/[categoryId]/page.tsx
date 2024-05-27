@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 
 import { db } from '@/db';
 
+import Billboard from '@/components/home/Billboard';
+
 const Page = async ({ params }: { params: { categoryId: string } }) => {
 	const { categoryId } = params;
 
@@ -13,7 +15,14 @@ const Page = async ({ params }: { params: { categoryId: string } }) => {
 		return notFound();
 	}
 
-	return <div>Page</div>;
+	return (
+		<div className='max-w-7xl mx-auto px-6 2xl:px-0'>
+			<Billboard
+				title={category.name}
+				img={category.billboard}
+			/>
+		</div>
+	);
 };
 
 export default Page;
