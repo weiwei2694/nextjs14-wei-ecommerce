@@ -5,7 +5,7 @@ const Logo = () => {
 	return (
 		<Link
 			href='/'
-			className='relative w-fit text-balance font-bold text-zinc-900 text-xl uppercase'
+			className='relative w-fit text-balance font-extrabold text-zinc-900 text-xl uppercase'
 		>
 			STORE
 		</Link>
