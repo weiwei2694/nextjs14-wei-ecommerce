@@ -1,22 +1,42 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 
 import { db } from '@/db';
 
+import { buildRedirectUrl } from '@/lib/utils';
+
 import Billboard from '@/components/home/Billboard';
 import CardProduct from '@/components/home/CardProduct';
-import { Button } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 
-const Page = async ({ params }: { params: { categoryId: string } }) => {
+const Page = async ({
+	params,
+	searchParams,
+}: {
+	params: { categoryId: string };
+	searchParams: {
+		[key: string]: string | undefined;
+	};
+}) => {
 	const { categoryId } = params;
+	const { color: colorFilter, size: sizeFilter } = searchParams;
 
 	const category = await db.category.findUnique({
-		where: { id: categoryId },
+		where: {
+			id: categoryId,
+		},
 		include: {
 			products: {
 				where: {
 					isArchived: false,
 					images: { some: {} },
+					color: {
+						name: colorFilter?.toLowerCase(),
+					},
+					size: {
+						value: sizeFilter?.toUpperCase(),
+					},
 				},
 				include: {
 					images: true,
@@ -48,14 +68,28 @@ const Page = async ({ params }: { params: { categoryId: string } }) => {
 						<h2 className='font-semibold'>Colors</h2>
 						<hr />
 						<div className='flex flex-wrap gap-2'>
+							<Link
+								href={buildRedirectUrl(categoryId, undefined, sizeFilter)}
+								className={buttonVariants({
+									variant: colorFilter === undefined ? 'default' : 'outline',
+								})}
+							>
+								All
+							</Link>
 							{colors.map((color, colorIndex) => (
-								<Button
-									variant='outline'
+								<Link
+									href={buildRedirectUrl(categoryId, color.name, sizeFilter)}
 									key={colorIndex}
-									className='capitalize'
+									className={buttonVariants({
+										variant:
+											colorFilter?.toLowerCase() === color.name
+												? 'default'
+												: 'outline',
+										className: 'capitalize',
+									})}
 								>
 									{color.name}
-								</Button>
+								</Link>
 							))}
 						</div>
 					</div>
@@ -63,14 +97,29 @@ const Page = async ({ params }: { params: { categoryId: string } }) => {
 						<h2 className='font-semibold'>Sizes</h2>
 						<hr />
 						<div className='flex flex-wrap gap-2'>
+							<Link
+								href={buildRedirectUrl(categoryId, colorFilter, undefined)}
+								className={buttonVariants({
+									variant: sizeFilter === undefined ? 'default' : 'outline',
+									className: 'capitalize',
+								})}
+							>
+								All
+							</Link>
 							{sizes.map((size, sizeIndex) => (
-								<Button
-									variant='outline'
+								<Link
+									href={buildRedirectUrl(categoryId, colorFilter, size.value)}
 									key={sizeIndex}
-									className='capitalize'
+									className={buttonVariants({
+										variant:
+											sizeFilter?.toUpperCase() === size.value
+												? 'default'
+												: 'outline',
+										className: 'capitalize',
+									})}
 								>
 									{size.name}
-								</Button>
+								</Link>
 							))}
 						</div>
 					</div>

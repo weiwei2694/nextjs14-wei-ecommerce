@@ -18,3 +18,33 @@ export const getFileKey = (url: string) => {
   const fileKey = url.substring(url.lastIndexOf('/') + 1);
   return fileKey;
 };
+
+// created by chatgpt
+export const buildRedirectUrl = (
+  categoryId: string,
+  colorFilter: string | undefined,
+  sizeFilter: string | undefined
+) => {
+  // Initialize the URL with the categoryId
+  let url = `/${categoryId}`;
+
+  // Create an array to hold query parameters
+  let queryParams = [];
+
+  // Add color filter if defined
+  if (colorFilter) {
+    queryParams.push(`color=${colorFilter}`);
+  }
+
+  // Add size filter if defined
+  if (sizeFilter) {
+    queryParams.push(`size=${sizeFilter}`);
+  }
+
+  // Append query parameters to URL if any exist
+  if (queryParams.length > 0) {
+    url += `?${queryParams.join('&')}`;
+  }
+
+  return url;
+}
