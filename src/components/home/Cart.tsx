@@ -15,7 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-import { Minus, Plus, WalletCards, X } from 'lucide-react';
+import { Minus, Plus, ShoppingBag, X } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 
@@ -93,7 +93,7 @@ const Cart = () => {
 					size='sm'
 					className='rounded-full px-5'
 				>
-					<WalletCards className='w-5 h-5 mr-1.5' />
+					<ShoppingBag className='w-5 h-5 mr-1.5' />
 					<span className='font-bold text-xs'>12</span>
 				</Button>
 			</SheetTrigger>
