@@ -10,6 +10,7 @@ import type {
 	Size,
 } from '@prisma/client';
 import Product from './Product';
+import CardProduct from '@/components/home/CardProduct';
 
 export type TSingleProduct = {
 	images: Image[];
@@ -40,9 +41,52 @@ const Page = async ({ params }: { params: { id: string } }) => {
 		return notFound();
 	}
 
+	const relatedProducts = await db.product.findMany({
+		where: {
+			id: { not: id },
+			isArchived: false,
+			category: {
+				name: product.category.name,
+			},
+			images: {
+				some: {},
+			},
+		},
+		include: {
+			category: {
+				select: {
+					name: true,
+				},
+			},
+			images: true,
+			color: true,
+			size: true,
+		},
+		take: 4,
+	});
+
 	return (
 		<div className='my-8 max-w-7xl mx-auto px-6 2xl:px-0'>
-			<Product product={product} />
+			<div className='flex flex-col gap-16'>
+				<Product product={product} />
+
+				<hr />
+
+				<div className='flex flex-col gap-5'>
+					<h1 className='font-extrabold text-3xl text-zinc-900'>
+						Related Items
+					</h1>
+
+					<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
+						{relatedProducts.map((product, productIndex) => (
+							<CardProduct
+								key={productIndex}
+								product={product}
+							/>
+						))}
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 };
