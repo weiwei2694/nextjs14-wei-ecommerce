@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 const Billboard = ({ img, title }: { img: string; title: string }) => {
 	return (
-		<div className='mb-8 sm:mb-10 mt-8 sm:mt-10'>
+		<div className='my-8'>
 			<div className='relative'>
 				<Image
 					src={img}
