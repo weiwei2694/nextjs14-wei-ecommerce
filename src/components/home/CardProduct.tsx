@@ -24,7 +24,7 @@ const recursive = Recursive({ subsets: ['latin'] });
 const CardProduct = ({ product }: { product: ProductFeatured }) => {
 	return (
 		<Card className='group'>
-			<CardHeader>
+			<CardHeader className='p-2'>
 				<div className='relative'>
 					<Image
 						src={product.images[0].url}
@@ -47,7 +47,7 @@ const CardProduct = ({ product }: { product: ProductFeatured }) => {
 					</div>
 				</div>
 			</CardHeader>
-			<CardContent>
+			<CardContent className='p-2'>
 				<Link
 					href={`/p/${product.id}`}
 					className='hover:underline'
@@ -58,7 +58,7 @@ const CardProduct = ({ product }: { product: ProductFeatured }) => {
 					{product.category.name}
 				</CardDescription>
 			</CardContent>
-			<CardFooter>
+			<CardFooter className='p-2'>
 				<CardTitle className='text-lg'>{formatPrice(product.price)}</CardTitle>
 			</CardFooter>
 		</Card>
