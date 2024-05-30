@@ -9,8 +9,11 @@ import type {
 	Product as ProductPrisma,
 	Size,
 } from '@prisma/client';
+
 import Product from './Product';
+
 import CardProduct from '@/components/home/CardProduct';
+import HeadingTitle from '@/components/home/HeadingTitle';
 
 export type TSingleProduct = {
 	images: Image[];
@@ -73,9 +76,7 @@ const Page = async ({ params }: { params: { id: string } }) => {
 				<hr />
 
 				<div className='flex flex-col gap-5'>
-					<h1 className='font-extrabold text-3xl text-zinc-900'>
-						Related Items
-					</h1>
+					<HeadingTitle title='related items' />
 
 					<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
 						{relatedProducts.map((product, productIndex) => (
