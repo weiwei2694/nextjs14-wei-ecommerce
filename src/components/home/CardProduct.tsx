@@ -15,13 +15,24 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-import { cn, formatPrice } from '@/lib/utils';
+import { cn, formatPrice, addItemToStorage } from '@/lib/utils';
 
 import type { ProductFeatured } from '@/app/(home)/page';
 
+import useTriggerUseEffect from '@/hooks/useTriggerUseEffect';
+
 const recursive = Recursive({ subsets: ['latin'] });
 
+export interface ProductStorage {
+	product: ProductFeatured;
+	amount: number;
+	total: number;
+}
+
 const CardProduct = ({ product }: { product: ProductFeatured }) => {
+	const [isPending, startTransition] = React.useTransition();
+	const { setTriggerUseEffect } = useTriggerUseEffect();
+
 	return (
 		<Card className='group'>
 			<CardHeader className='p-2'>
@@ -41,6 +52,12 @@ const CardProduct = ({ product }: { product: ProductFeatured }) => {
 								recursive.className,
 								'tracking-[.1rem] rounded-none w-full'
 							)}
+							disabled={isPending}
+							isLoading={isPending}
+							loadingText='Adding to cart'
+							onClick={() =>
+								addItemToStorage(product, startTransition, setTriggerUseEffect)
+							}
 						>
 							ADD TO CART
 						</Button>

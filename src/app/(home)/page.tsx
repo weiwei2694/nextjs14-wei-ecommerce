@@ -4,13 +4,15 @@ import { db } from '@/db';
 
 import CardProduct from '@/components/home/CardProduct';
 
-import type { Image, Product } from '@prisma/client';
+import type { Color, Image, Product, Size } from '@prisma/client';
 
 export type ProductFeatured = {
 	images: Image[];
 	category: {
 		name: string;
 	};
+	color: Color;
+	size: Size;
 } & Product;
 
 const Page = async () => {
@@ -29,6 +31,8 @@ const Page = async () => {
 					name: true,
 				},
 			},
+			color: true,
+			size: true,
 		},
 	});
 

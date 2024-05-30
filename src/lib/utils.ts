@@ -1,5 +1,13 @@
+import React from 'react';
+
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
+
+import type { ProductStorage } from "@/components/home/CardProduct"
+
+import type { ProductFeatured } from '@/app/(home)/page';
+
+import { toast } from 'sonner';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -48,3 +56,50 @@ export const buildRedirectUrl = (
 
   return url;
 }
+
+export const addItemToStorage = (
+  product: ProductFeatured,
+  startTransition: React.TransitionStartFunction,
+  setTriggerUseEffect: (value: string | null) => void
+) => {
+  try {
+    const newProduct: ProductStorage = {
+      product,
+      amount: product.price,
+      total: 1,
+    };
+
+    startTransition(() => {
+      const cart = localStorage.getItem('cart');
+
+      if (cart) {
+        const parsedCart: ProductStorage[] = JSON.parse(cart);
+        const existingProduct = parsedCart.find((value) => {
+          return value.product.id === newProduct.product.id;
+        });
+
+        if (existingProduct) {
+          parsedCart.map((value) => {
+            if (value.product.id === newProduct.product.id) {
+              value.amount += newProduct.product.price;
+              value.total += 1;
+            }
+
+            return value;
+          });
+          localStorage.setItem('cart', JSON.stringify(parsedCart));
+        } else {
+          parsedCart.push(newProduct);
+          localStorage.setItem('cart', JSON.stringify(parsedCart));
+        }
+      } else {
+        localStorage.setItem('cart', JSON.stringify([newProduct]));
+      }
+    });
+  } finally {
+    toast.success('Added to cart.');
+
+    const randomNumberString = String(Math.floor(Math.random() * 10000));
+    setTriggerUseEffect(randomNumberString);
+  }
+};

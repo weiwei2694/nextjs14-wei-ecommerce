@@ -8,10 +8,16 @@ import Images from './Images';
 
 import { ShoppingCart } from 'lucide-react';
 
-import { formatPrice } from '@/lib/utils';
+import { formatPrice, addItemToStorage } from '@/lib/utils';
+
+import { Button } from '@/components/ui/button';
+
+import useTriggerUseEffect from '@/hooks/useTriggerUseEffect';
 
 const Product = ({ product }: { product: TSingleProduct }) => {
 	const [activeImage, setActiveImage] = React.useState(product.images[0]);
+	const [isPending, startTransition] = React.useTransition();
+	const { setTriggerUseEffect } = useTriggerUseEffect();
 
 	return (
 		<div className='flex flex-col gap-5'>
@@ -72,16 +78,25 @@ const Product = ({ product }: { product: TSingleProduct }) => {
 								</div>
 
 								<div className='flex-0 md:flex-1 flex items-end'>
-									<button
-										onClick={() => {}}
+									<Button
+										onClick={() =>
+											addItemToStorage(
+												product,
+												startTransition,
+												setTriggerUseEffect
+											)
+										}
 										type='button'
-										className='flex items-center gap-2 py-3 px-5 rounded-full font-medium bg-black text-white hover:bg-gray-800 disabled:bg-gray-700 disabled:cursor-not-allowed focus:outline-none'
+										disabled={isPending}
+										isLoading={isPending}
+										loadingText='Adding to cart'
+										className='rounded-full'
 									>
 										Add To Cart
 										<span className='text-2xl'>
-											<ShoppingCart className='w-4 h-4' />
+											<ShoppingCart className='w-4 h-4 ml-1.5' />
 										</span>
-									</button>
+									</Button>
 								</div>
 							</div>
 						</div>
