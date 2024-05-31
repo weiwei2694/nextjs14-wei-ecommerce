@@ -23,6 +23,10 @@ import CartProduct from './CartProduct';
 
 import useTriggerUseEffect from '@/hooks/useTriggerUseEffect';
 
+import { getProductIsArchived } from '@/app/(home)/p/[id]/actions';
+
+import { toast } from 'sonner';
+
 const openSans = Open_Sans({ subsets: ['latin'] });
 
 const SheetBody = ({
@@ -41,7 +45,8 @@ const AStraightLine = () => {
 
 const Cart = () => {
 	const { triggerUseEffect } = useTriggerUseEffect();
-	const [cart, setCart] = React.useState<ProductStorage[] | null>(null);
+	const [cart, setCart] = React.useState<ProductStorage[]>([]);
+	const [isPending, startTransition] = React.useTransition();
 
 	React.useEffect(() => {
 		setCart(JSON.parse(localStorage.getItem('cart') || '[]'));
@@ -49,6 +54,35 @@ const Cart = () => {
 
 	const totalPrice: number =
 		cart?.reduce((total, curr) => total + curr.amount, 0) || 0;
+
+	const handleCheckout = async () => {
+		try {
+			// TODO: have to log in, before checkout
+			// ...
+
+			// TODO: validation cartItem - check is item exist or no
+			for (const cartItem of cart) {
+				const product = await getProductIsArchived(cartItem.product.id);
+
+				if (product?.isArchived) {
+					const updatedCart = cart.filter(
+						(item) => item.product.id !== product.id
+					);
+					setCart(updatedCart);
+					localStorage.setItem('cart', JSON.stringify(updatedCart));
+
+					toast.info(
+						`Product "${product.title}" is not available at this time`
+					);
+				}
+			}
+
+			// TODO: payment stripe
+			// ...
+		} catch (err) {
+			console.error(`[ERROR_HANDLE_CHECKOUT]: ${err}`);
+		}
+	};
 
 	return (
 		<Sheet>
@@ -101,6 +135,19 @@ const Cart = () => {
 						<Button
 							type='button'
 							className='py-[10px] px-[30px] rounded-none h-[49px] w-full uppercase text-white tracking-[.3rem] font-[600] flex flex-row items-center justify-center gap-x-4'
+							disabled={isPending}
+							isLoading={isPending}
+							loadingText='Processing'
+							onClick={() => {
+								if (!cart.length) {
+									toast.error('Cart is empty.');
+									return;
+								}
+
+								startTransition(() => {
+									handleCheckout();
+								});
+							}}
 						>
 							checkout
 							<div

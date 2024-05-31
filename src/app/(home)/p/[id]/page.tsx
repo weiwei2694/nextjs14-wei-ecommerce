@@ -14,6 +14,7 @@ import Product from './Product';
 
 import CardProduct from '@/components/home/CardProduct';
 import HeadingTitle from '@/components/home/HeadingTitle';
+import { getProduct } from './actions';
 
 export type TSingleProduct = {
 	images: Image[];
@@ -27,19 +28,7 @@ export type TSingleProduct = {
 const Page = async ({ params }: { params: { id: string } }) => {
 	const { id } = params;
 
-	const product: TSingleProduct | null = await db.product.findUnique({
-		where: { id, images: { some: {} }, isArchived: false },
-		include: {
-			category: {
-				select: {
-					name: true,
-				},
-			},
-			images: true,
-			color: true,
-			size: true,
-		},
-	});
+	const product: TSingleProduct | null = await getProduct(id);
 	if (!product) {
 		return notFound();
 	}
