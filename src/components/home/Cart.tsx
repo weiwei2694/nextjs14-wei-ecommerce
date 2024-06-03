@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Open_Sans } from 'next/font/google';
+import { useRouter } from 'next/navigation';
 
 import {
 	Sheet,
@@ -27,6 +28,9 @@ import { getProductIsArchived } from '@/app/(home)/p/[id]/actions';
 
 import { toast } from 'sonner';
 
+import { useKindeBrowserClient } from '@kinde-oss/kinde-auth-nextjs';
+import { createCheckoutSession } from '@/app/(home)/actions';
+
 const openSans = Open_Sans({ subsets: ['latin'] });
 
 const SheetBody = ({
@@ -44,6 +48,9 @@ const AStraightLine = () => {
 };
 
 const Cart = () => {
+	const router = useRouter();
+	const { user } = useKindeBrowserClient();
+
 	const { triggerUseEffect } = useTriggerUseEffect();
 	const [cart, setCart] = React.useState<ProductStorage[]>([]);
 	const [isPending, startTransition] = React.useTransition();
@@ -57,10 +64,11 @@ const Cart = () => {
 
 	const handleCheckout = async () => {
 		try {
-			// TODO: have to log in, before checkout
-			// ...
+			if (!user) {
+				router.push('/api/auth/login?post_login_redirect_url=/');
+				return;
+			}
 
-			// TODO: validation cartItem - check is item exist or no
 			for (const cartItem of cart) {
 				const product = await getProductIsArchived(cartItem.product.id);
 
@@ -77,8 +85,10 @@ const Cart = () => {
 				}
 			}
 
-			// TODO: payment stripe
-			// ...
+			const res = await createCheckoutSession(cart);
+			if (res?.url) {
+				router.push(res.url);
+			}
 		} catch (err) {
 			console.error(`[ERROR_HANDLE_CHECKOUT]: ${err}`);
 		}
