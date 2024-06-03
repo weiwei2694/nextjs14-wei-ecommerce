@@ -6,6 +6,8 @@ import { stripe } from "@/lib/stripe";
 
 import type { ProductStorage } from "@/components/home/CardProduct";
 
+import { db } from "@/db";
+
 export const createCheckoutSession = async (products: ProductStorage[]) => {
   const { getUser } = getKindeServerSession();
   const user = await getUser();
@@ -13,6 +15,28 @@ export const createCheckoutSession = async (products: ProductStorage[]) => {
     throw new Error('You need to be logged in');
   }
 
+  const totalPrice: number = products.reduce((total, curr) => total + curr.amount, 0) || 0;
+  const qty: number = products.reduce((total, curr) => total + curr.total, 0) || 0;
+  const orderItems = products.map((item) => ({
+    amount: item.amount,
+    total: item.total,
+    productId: item.product.id,
+  }));
+
+  const order = await db.order.create({
+    data: {
+      amount: totalPrice,
+      total: qty,
+      isPaid: false,
+      orderItems: {
+        createMany: {
+          data: orderItems
+        }
+      }
+    }
+  })
+
+  // STRIPE
   const createProductPromises = products.map(({ product }) => {
     return stripe.products.create({
       name: product.title,
@@ -34,6 +58,7 @@ export const createCheckoutSession = async (products: ProductStorage[]) => {
     },
     metadata: {
       userId: user.id,
+      orderId: order.id
     },
     line_items: productsCreated.map((product) => {
       const quantity = products.find(({ product: currProduct }) => currProduct.title === product.name)?.total || 1;

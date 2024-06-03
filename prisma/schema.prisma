@@ -85,9 +85,10 @@ model Category {
 }
 
 model Order {
-  id     String @id @default(uuid())
+  id     String  @id @default(uuid())
   amount Float
   total  Int
+  isPaid Boolean @default(false)
 
   orderItems OrderItem[]
 
