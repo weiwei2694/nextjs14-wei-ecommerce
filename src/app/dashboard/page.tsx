@@ -19,9 +19,17 @@ const Page = async () => {
 			},
 		},
 	});
-	const sales = await db.order.count({});
+	const sales = await db.order.count({
+		where: {
+			isPaid: true,
+		},
+	});
 
-	const orders = await db.order.findMany({});
+	const orders = await db.order.findMany({
+		where: {
+			isPaid: true,
+		},
+	});
 	const totalRevenue = orders.reduce((a, b) => a + b.total, 0);
 
 	return (
