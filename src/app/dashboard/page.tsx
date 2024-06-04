@@ -30,7 +30,7 @@ const Page = async () => {
 			isPaid: true,
 		},
 	});
-	const totalRevenue = orders.reduce((a, b) => a + b.total, 0);
+	const totalRevenue = orders.reduce((a, b) => a + b.amount, 0);
 
 	return (
 		<BodySection>
