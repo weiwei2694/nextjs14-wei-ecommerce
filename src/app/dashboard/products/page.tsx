@@ -5,22 +5,24 @@ import BodySection from '@/components/dashboard/BodySection';
 import HeadSection from '@/components/dashboard/HeadSection';
 
 import { getProducts, getTotalProduct } from './_utils/actions';
+
 import Table from './Table';
+import Filter from './Filter';
 
 const Page = async ({
 	searchParams,
 }: {
 	searchParams: {
-		[key: string]: string | string[] | undefined;
+		[key: string]: string | undefined;
 	};
 }) => {
-	const { page } = searchParams;
+	const { page, q } = searchParams;
 	if (!page || typeof page !== 'string') {
 		redirect('/dashboard/products?page=1');
 	}
 
 	const totalProduct = await getTotalProduct();
-	const products = await getProducts({ page: Number(page) - 1 });
+	const products = await getProducts({ page: Number(page) - 1, q });
 
 	return (
 		<BodySection>
@@ -31,10 +33,14 @@ const Page = async ({
 				newButtonPath='/dashboard/products/create'
 			/>
 
-			<Table
-				products={products}
-				page={Number(page)}
-			/>
+			<div className='flex flex-col gap-5'>
+				<Filter />
+
+				<Table
+					products={products}
+					page={Number(page)}
+				/>
+			</div>
 		</BodySection>
 	);
 };

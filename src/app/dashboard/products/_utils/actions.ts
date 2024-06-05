@@ -24,15 +24,27 @@ export const getTotalProduct = async (): Promise<GetTotalProduct> => {
 
 export const getProducts = async ({
   page = 0,
-  per_page = 10
+  per_page = 10,
+  q,
 }: {
   page?: number;
   per_page?: number;
+  q?: string;
 }): Promise<GetProducts> => {
   try {
     const skip = per_page * page;
 
-    const whereFilter = {
+    const whereClause: any = {};
+
+    if (q) {
+      const searchTerm = q.toLowerCase();
+
+      whereClause.OR = [
+        { title: { contains: searchTerm, mode: "insensitive" } }
+      ]
+    }
+
+    const products = await db.product.findMany({
       include: {
         category: true,
         size: true,
@@ -40,18 +52,18 @@ export const getProducts = async ({
         images: true,
       },
       skip,
-      take: per_page
-    }
+      take: per_page,
+      where: whereClause,
+    });
 
-    const products = await db.product.findMany(whereFilter);
-    const totalCount = await db.product.count();
+    const totalCount = await db.product.count({ where: whereClause });
     const hasNext = Boolean(totalCount - skip - products.length);
 
     return { data: products, hasNext };
   } catch (err) {
     console.error(`[ERROR_GET_PRODUCTS]: ${err}`);
   }
-}
+};
 
 export const getProduct = async ({
   id
