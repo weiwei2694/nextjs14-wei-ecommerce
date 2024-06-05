@@ -4,6 +4,7 @@ import { db } from '@/db';
 
 import CardProduct from '@/components/home/CardProduct';
 import HeadingTitle from '@/components/home/HeadingTitle';
+import Billboard from '@/components/home/Billboard';
 
 import type { Color, Image, Product, Size } from '@prisma/client';
 
@@ -38,8 +39,13 @@ const Page = async () => {
 	});
 
 	return (
-		<div className='max-w-7xl mx-auto my-8 px-6 2xl:px-0'>
-			<div className='flex flex-col gap-5'>
+		<div className='max-w-7xl mx-auto px-6 2xl:px-0'>
+			<Billboard
+				title='Explore the Featured Collection!'
+				img='/featured-2.jpg'
+			/>
+
+			<div className='flex flex-col gap-5 mt-16'>
 				<HeadingTitle title='featured products' />
 
 				<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
