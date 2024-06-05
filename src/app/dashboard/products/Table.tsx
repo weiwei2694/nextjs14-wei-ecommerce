@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useTransition } from 'react';
+import React from 'react';
 
 import {
 	Table as TableShadcnUI,
@@ -12,40 +12,10 @@ import {
 import DataEmpty from '@/components/dashboard/DataEmpty';
 import NextPrev from '@/components/dashboard/NextPrev';
 
-import { toast } from 'sonner';
-
 import type { GetProducts } from './_utils/types';
-import { deleteProduct } from './_utils/actions';
 import Product from './Product';
 
 const Table = ({ products, page }: { products: GetProducts; page: number }) => {
-	const [isPending, startTransition] = useTransition();
-
-	const handleDelete = async (id: string) => {
-		if (isPending) return;
-
-		try {
-			const { success } = await deleteProduct({ id });
-
-			if (success) {
-				toast.success('Product deleted.');
-			}
-		} catch (err) {
-			console.error(`[ERROR_DELETE_PRODUCT]: ${err}`);
-
-			if (typeof err === 'string') {
-				if (
-					err === 'You do not have access to this area' ||
-					err === 'Product not found.'
-				) {
-					toast.error(err);
-				}
-			} else {
-				toast.error('Something went wrong.');
-			}
-		}
-	};
-
 	return products && products.data && products.data.length ? (
 		<div className='flex flex-col gap-5'>
 			<TableShadcnUI>
@@ -68,9 +38,6 @@ const Table = ({ products, page }: { products: GetProducts; page: number }) => {
 						<Product
 							key={product.id}
 							product={product}
-							handleDelete={handleDelete}
-							isPending={isPending}
-							startTransition={startTransition}
 						/>
 					))}
 				</TableBody>

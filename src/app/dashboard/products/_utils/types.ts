@@ -19,10 +19,6 @@ export type SaveProduct = {
   success: boolean;
 };
 
-export type DeleteProduct = {
-  success: boolean;
-}
-
 export type GetProduct = Product | undefined;
 
 export type DeleteProductImage = {

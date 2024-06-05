@@ -6,7 +6,7 @@ import { getKindeServerSession } from '@kinde-oss/kinde-auth-nextjs/server';
 
 import { revalidatePath } from 'next/cache';
 
-import type { SaveProduct, GetTotalProduct, GetProducts, DeleteProduct, GetProduct, DeleteProductImage, UpdateProduct } from './types';
+import type { SaveProduct, GetTotalProduct, GetProducts, GetProduct, DeleteProductImage, UpdateProduct } from './types';
 
 import type { Category, Color, Size } from '@prisma/client';
 
@@ -201,45 +201,6 @@ export const updateProduct = async ({
     throw err;
   } finally {
     revalidatePath(path || '/dashboard/products');
-  }
-}
-
-export const deleteProduct = async ({
-  id
-}: {
-  id: string;
-}): Promise<DeleteProduct> => {
-  try {
-    const { getUser } = getKindeServerSession()
-    const user = await getUser();
-    if (!user || user.email !== process.env.ADMIN_EMAIL) {
-      throw new Error('You do not have access to this area');
-    }
-
-    const existingProduct = await db.product.findUnique({
-      where: { id }
-    });
-    if (!existingProduct) {
-      throw new Error('Product not found.');
-    }
-
-    const imagesDb = await db.image.findMany({
-      where: {
-        productId: existingProduct.id
-      }
-    });
-    const images = imagesDb.map(img => img.url && getFileKey(img.url));
-    await utapi.deleteFiles(images);
-
-    await db.product.delete({
-      where: { id }
-    });
-
-    return { success: true };
-  } catch (err) {
-    throw err;
-  } finally {
-    revalidatePath('/dashboard/products');
   }
 }
 
