@@ -34,7 +34,7 @@ const CardProduct = ({ product }: { product: ProductFeatured }) => {
 	const { setTriggerUseEffect } = useTriggerUseEffect();
 
 	return (
-		<Card className='group'>
+		<Card className='group h-fit'>
 			<CardHeader className='p-2'>
 				<div className='relative'>
 					<Image

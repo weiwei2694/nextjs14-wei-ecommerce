@@ -45,7 +45,7 @@ const Page = async () => {
 				img='/featured-2.jpg'
 			/>
 
-			<div className='flex flex-col gap-5 mt-16'>
+			<div className='flex flex-col gap-5 mt-16 mb-8'>
 				<HeadingTitle title='featured products' />
 
 				<div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5'>
